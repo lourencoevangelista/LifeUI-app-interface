@@ -1,0 +1,10 @@
+{
+  "name": "lifeui-tools",
+  "private": true,
+  "description": "Python tools and tests. This package.json only lets Turborepo run them (through ../scripts/py.mjs, which finds the virtual environment).",
+  "scripts": {
+    "check": "node ../scripts/py.mjs tools/validate_ontology.py && node ../scripts/contrast.mjs",
+    "test": "node ../scripts/py.mjs tools/import_knowledge.py selftest && node ../scripts/py.mjs tools/backup.py selftest && node ../scripts/py.mjs tools/agent_runner.py selftest && node ../scripts/py.mjs tools/news/weather.py selftest && node ../scripts/py.mjs tools/news/news.py selftest && node ../scripts/py.mjs tools/news/extras.py selftest",
+    "e2e": "node ../scripts/py.mjs tools/smoke_test.py --local-db && node ../scripts/py.mjs tools/ui_test.py"
+  }
+}

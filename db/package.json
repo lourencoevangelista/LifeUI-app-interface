@@ -1,0 +1,21 @@
+{
+  "name": "lifeui-db",
+  "private": true,
+  "type": "module",
+  "description": "Drizzle schema and migrations for LifeUI (source of truth for the PostgreSQL schema; Rust reads it through sqlx).",
+  "scripts": {
+    "generate": "drizzle-kit generate",
+    "migrate": "node scripts/migrate.mjs",
+    "check": "tsc --noEmit && drizzle-kit check"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.45.4",
+    "pg": "^8.23.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "@types/pg": "^8.23.1",
+    "drizzle-kit": "^0.31.11",
+    "typescript": "^7.0.2"
+  }
+}

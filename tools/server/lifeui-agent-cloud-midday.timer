@@ -1,0 +1,11 @@
+[Unit]
+Description=LifeUI agent: midday inbox check (12:30)
+
+[Timer]
+OnCalendar=*-*-* 12:30:00
+# Times are the server's local time (timedatectl set-timezone ...). Catch up after the server was off; runs are serialized by the service.
+Persistent=true
+Unit=lifeui-agent@cloud-midday.service
+
+[Install]
+WantedBy=timers.target

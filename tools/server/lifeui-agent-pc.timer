@@ -1,0 +1,11 @@
+[Unit]
+Description=LifeUI agent: notes changed lately (18:30)
+
+[Timer]
+OnCalendar=*-*-* 18:30:00
+# Times are the server's local time (timedatectl set-timezone ...). Catch up after the server was off; runs are serialized by the service.
+Persistent=true
+Unit=lifeui-agent@pc-evening.service
+
+[Install]
+WantedBy=timers.target

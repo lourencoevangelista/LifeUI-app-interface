@@ -1,0 +1,58 @@
+name: agent
+
+# MANUAL BACKUP of the LifeUI agent's cloud run (read-only), on Claude.
+# The scheduled runs (morning briefing, midday inbox check, evening overview, Obsidian) now happen on the home server
+# with a local model: tools/server/ (systemd timers). This workflow has no schedule so the inbox is never claimed twice;
+# start it from the Actions tab when the server is down. It reads LifeUI (runner API), this repo's GitHub issues/commits
+# and, if configured, Google Calendar.
+#
+# Needed once (repo Settings > Secrets and variables > Actions):
+#   secret   LIFEUI_RUNNER_TOKEN   created in the Agent tab (Settings), starts with lua_
+#   secret   ANTHROPIC_API_KEY     Claude API key
+#   secret   GCAL_ICS_URL          optional: Google Calendar "secret address in iCal format"
+#   variable LIFEUI_URL            required: your app's URL, e.g. https://your-app.vercel.app
+# The kill switch in the Agent tab stops every run (the script then exits without calling Claude).
+
+on:
+  workflow_dispatch:
+    inputs:
+      slot:
+        description: "Which run to start by hand"
+        type: choice
+        options: [morning, midday, evening]
+        default: morning
+      dry_run:
+        description: "Print what would be sent to Claude, send nothing"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  issues: read
+
+concurrency:
+  group: lifeui-agent
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: tools/requirements.txt
+      - run: pip install anthropic icalendar recurring-ical-events
+      - name: Run the agent
+        env:
+          AGENT_PROVIDER: anthropic
+          LIFEUI_URL: ${{ vars.LIFEUI_URL }}
+          LIFEUI_RUNNER_TOKEN: ${{ secrets.LIFEUI_RUNNER_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GCAL_ICS_URL: ${{ secrets.GCAL_ICS_URL }}
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: python -I tools/agent_runner.py run --where cloud --slot "${{ inputs.slot }}" ${{ inputs.dry_run && '--dry-run' || '' }}

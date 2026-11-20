@@ -1,0 +1,11 @@
+[Unit]
+Description=LifeUI agent: evening overview (19:00)
+
+[Timer]
+OnCalendar=*-*-* 19:00:00
+# Times are the server's local time (timedatectl set-timezone ...). Catch up after the server was off; runs are serialized by the service.
+Persistent=true
+Unit=lifeui-agent@cloud-evening.service
+
+[Install]
+WantedBy=timers.target

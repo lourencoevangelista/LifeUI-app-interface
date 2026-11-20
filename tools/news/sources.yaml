@@ -1,0 +1,93 @@
+# Daily news briefing: YOUR interests. Sources, topics and selection settings (read by tools/news/news.py).
+# This file is meant to be edited: replace the example sources and topics with what you follow (any subject, not
+# only AI), describe yourself in `reader` and your main interest in `focus`; the local model ranks every item
+# against them. A source can be removed or `enabled: false`; `weight` (0.5-2.0) nudges its items up or down.
+# Kinds:
+#   rss               RSS or Atom feed (url)
+#   github_releases   releases of a GitHub repo (repo), via its releases.atom feed
+#   github_activity   new issues and PRs of a GitHub repo (repo), via the GitHub API (GITHUB_TOKEN if set)
+#   html_links        a news page without a feed (url + link pattern); items are dated by when first seen
+#   hn                Hacker News stories above min_points (Algolia API)
+#   hf_papers         Hugging Face daily papers
+#   hf_models         new Hugging Face models from the listed orgs (orgs)
+# `require_keywords: true` keeps only items that match at least one topic keyword (for broad sources).
+
+settings:
+  reader: "someone who follows AI and software news and builds small apps with AI models."
+  focus_name: Focus           # the label of the "focus" filter and highlights in the app
+  focus: "AI agents: frameworks, tool calling, MCP, coding agents and running models locally."
+  language_intro: en        # intro ("3 things that matter today") and weather line: en, pt, es, fr, de, ...
+  language_items: en        # item summaries and "why it matters"
+  top_n: 12
+  min_focus: 3              # at least this many focus-relevant items, if any exist
+  window_hours: 24
+  window_hours_monday: 72
+  memory_days: 30           # an item seen in the last 30 days never comes back
+  max_candidates: 40        # items sent to the local model per day (after keyword pre-ranking)
+  candidate_quota:          # bulk groups only send their best N items to the model (and at most 3 reach the briefing)
+    papers: 8
+    community: 6
+
+# Topics: keyword groups (case-insensitive, matched on title + text). `focus: true` topics drive the
+# focus-relevance pre-score; the local model gives the final 0-10 scores. Add your own groups freely.
+topics:
+  agents:
+    focus: true
+    keywords: [agent framework, agents sdk, agent sdk, tool calling, function calling, tool use, structured output,
+               multi-agent, agent memory, coding agent, claude code, codex, computer use, context engineering]
+  mcp:
+    focus: true
+    keywords: [mcp, model context protocol, mcp server, mcp client, skills, plugin]
+  local_models:
+    focus: true
+    keywords: [open-weight, open weights, local llm, small language model, ollama, llama.cpp, gguf, quantization,
+               qwen, deepseek, llama, gemma, mistral]
+  evals:
+    focus: false
+    keywords: [eval, evals, evaluation, benchmark, swe-bench]
+  frontier:
+    focus: false
+    keywords: [frontier model, state of the art, sota, breakthrough, agi, scaling, alignment, interpretability,
+               safety, open source model, release, launch]
+
+sources:
+  # --- AI labs and tools ----------------------------------------------------------------------------------
+  - {id: openai, name: OpenAI, kind: rss, url: "https://openai.com/news/rss.xml"}
+  - {id: deepmind, name: Google DeepMind, kind: rss, url: "https://deepmind.google/blog/rss.xml"}
+  - {id: google_ai, name: Google AI, kind: rss, url: "https://blog.google/technology/ai/rss/"}
+  - {id: mistral, name: Mistral, kind: rss, url: "https://mistral.ai/rss.xml"}
+  - {id: huggingface, name: Hugging Face blog, kind: rss, url: "https://huggingface.co/blog/feed.xml"}
+  - {id: anthropic, name: Anthropic, kind: html_links, url: "https://www.anthropic.com/news", link_pattern: "^/news/[a-z0-9-]+$", base: "https://www.anthropic.com", weight: 1.3}
+  - {id: meta_ai, name: Meta AI, kind: html_links, url: "https://ai.meta.com/blog/", link_pattern: "^https://ai\\.meta\\.com/blog/[a-z0-9-]+/?$"}
+  - {id: ollama, name: Ollama releases, kind: github_releases, repo: ollama/ollama}
+  - {id: claude_code, name: Claude Code, kind: github_releases, repo: anthropics/claude-code, weight: 1.2}
+  - {id: claude_agent_sdk_ts, name: Claude Agent SDK (TS), kind: github_releases, repo: anthropics/claude-agent-sdk-typescript, weight: 1.2}
+  - {id: claude_agent_sdk_py, name: Claude Agent SDK (Python), kind: github_releases, repo: anthropics/claude-agent-sdk-python}
+
+  # --- Research -------------------------------------------------------------------------------------------
+  - {id: arxiv_ai, group: papers, name: arXiv cs.AI, kind: rss, url: "https://rss.arxiv.org/rss/cs.AI", require_keywords: true, weight: 0.8}
+  - {id: arxiv_cl, group: papers, name: arXiv cs.CL, kind: rss, url: "https://rss.arxiv.org/rss/cs.CL", require_keywords: true, weight: 0.8}
+  - {id: arxiv_lg, group: papers, name: arXiv cs.LG, kind: rss, url: "https://rss.arxiv.org/rss/cs.LG", require_keywords: true, weight: 0.8}
+  - {id: hf_papers, group: papers, name: HF daily papers, kind: hf_papers, url: "https://huggingface.co/api/daily_papers"}
+
+  # --- Community ------------------------------------------------------------------------------------------
+  - {id: hn, group: community, name: Hacker News, kind: hn, min_points: 100, require_keywords: true}
+  # Reddit often answers 404/429 to anonymous feed requests; set enabled: true to try.
+  - {id: r_localllama, enabled: false, group: community, name: r/LocalLLaMA, kind: rss, url: "https://www.reddit.com/r/LocalLLaMA/top/.rss?t=day", require_keywords: true, weight: 0.8}
+  - {id: r_ml, enabled: false, group: community, name: r/MachineLearning, kind: rss, url: "https://www.reddit.com/r/MachineLearning/top/.rss?t=day", require_keywords: true, weight: 0.8}
+
+  # --- Agent models (new models from established labs only, not community fine-tunes) ---------------------
+  - id: hf_models
+    name: Hugging Face new models
+    kind: hf_models
+    orgs: [Qwen, deepseek-ai, moonshotai, zai-org, mistralai, meta-llama, google, nvidia, microsoft, openai,
+           ibm-granite, LiquidAI, NousResearch, allenai, tencent, MiniMaxAI, HuggingFaceTB]
+
+  # --- Your focus: the projects you care most about (focus: true marks them as focus-relevant) -------------
+  # - {id: my_project, name: My project, kind: github_releases, focus: true, weight: 1.5, repo: [your-org/your-repo]}
+  # - {id: my_project_activity, name: My project (issues/PRs), kind: github_activity, focus: true, repo: [your-org/your-repo]}
+
+  # --- Agent frameworks and MCP ----------------------------------------------------------------------------
+  - {id: vercel_ai, name: Vercel AI SDK, kind: github_releases, repo: vercel/ai, major_minor_only: true}
+  - {id: openai_agents_js, name: OpenAI Agents SDK (JS), kind: github_releases, repo: openai/openai-agents-js}
+  - {id: mcp, name: MCP, kind: github_releases, repo: [modelcontextprotocol/modelcontextprotocol, modelcontextprotocol/typescript-sdk, modelcontextprotocol/python-sdk]}

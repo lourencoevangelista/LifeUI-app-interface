@@ -1,0 +1,24 @@
+# Personal data: never commit. data-private/ holds your knowledge base (owner.ttl, imports) and screenshots.
+/data-private/
+.env.agent
+.news-state/
+Docs/
+*Personal Ontology Source*.md
+*.dump
+*.sql.age
+.env
+.env.*
+!.env.example
+
+# Local Claude Code settings (machine-specific paths)
+.claude/settings.local.json
+
+# Tooling
+.venv/
+__pycache__/
+
+# Rust / Node
+target/
+node_modules/
+.turbo/
+web/dist/

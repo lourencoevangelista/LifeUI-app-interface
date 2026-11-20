@@ -1,0 +1,17 @@
+{
+  "name": "lifeui",
+  "private": true,
+  "description": "LifeUI monorepo: Turborepo orchestrates the Rust (Cargo), TypeScript (db) and Python (tools) tasks. It does not build the production site: Vercel runs scripts/vercel-build.sh (see vercel.json).",
+  "packageManager": "npm@11.17.0",
+  "workspaces": ["db", "web", "tools", "src"],
+  "scripts": {
+    "check": "turbo run check",
+    "test": "turbo run test",
+    "build": "turbo run build",
+    "e2e": "turbo run e2e",
+    "ci": "turbo run check test e2e"
+  },
+  "devDependencies": {
+    "turbo": "^2.5.0"
+  }
+}

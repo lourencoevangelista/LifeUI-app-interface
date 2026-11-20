@@ -1,0 +1,52 @@
+# Weather hints for the Today card (read by tools/news/weather.py; edit freely, takes effect the next morning).
+#
+# commute: when you are usually outside. `days` uses mon..sun; windows are local times "HH:MM-HH:MM" (an hourly
+#          forecast counts when its hour starts inside a window, so 08:00-09:30 looks at 08:00 and 09:00).
+# rules:   checked in order; every rule that matches adds one hint. Fields:
+#   id      short name (also the CSS class h-<id>)
+#   when    rain_commute  highest hourly rain probability (%) inside the commute windows
+#           rain_day      highest hourly rain probability (%) 09:00-21:00, else the daily probability
+#           tmax / tmin   the day's max / min temperature (°C)
+#           wind_kmh      highest hourly wind speed (km/h)
+#           warning       an official yellow/orange/red weather warning for your area that starts today
+#   min / max   threshold (value >= min, value <= max)
+#   level   info | warn | alert   (alert = highlighted banner at the top of the Today card)
+#   text    the hint, in your language; {value}, {time} (hour of the worst value), {place}, and for warnings
+#           {type}, {level} (yellow/orange/red) and {level_pt} (amarelo/laranja/vermelho) are filled in
+#   unless  skip this rule when another rule with that id already matched
+
+commute:
+  days: [mon, tue, wed, thu, fri]
+  windows: ["08:00-09:30", "17:00-19:00"]
+
+rules:
+  - id: umbrella
+    when: rain_commute
+    min: 60
+    level: warn
+    text: "Take an umbrella: {value}% chance of rain at {time}."
+  - id: rain
+    when: rain_day
+    min: 60
+    level: info
+    unless: umbrella
+    text: "Rain likely ({value}% at {time}), outside your commute."
+  - id: heat
+    when: tmax
+    min: 30
+    level: warn
+    text: "Hot: up to {value} °C. Drink water and avoid the midday sun."
+  - id: cold
+    when: tmin
+    max: 5
+    level: info
+    text: "Cold: down to {value} °C. Take a coat."
+  - id: wind
+    when: wind_kmh
+    min: 50
+    level: warn
+    text: "Strong wind: up to {value} km/h at {time}."
+  - id: warning
+    when: warning
+    level: alert
+    text: "IPMA {level} warning for {place}: {type}."

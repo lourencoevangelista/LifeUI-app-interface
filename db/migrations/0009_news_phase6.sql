@@ -1,0 +1,3 @@
+ALTER TABLE "lifeui"."audit_log" DROP CONSTRAINT "audit_log_action_check";--> statement-breakpoint
+ALTER TABLE "lifeui"."news_briefings" ADD COLUMN "extras" jsonb DEFAULT '{}'::jsonb NOT NULL;--> statement-breakpoint
+ALTER TABLE "lifeui"."audit_log" ADD CONSTRAINT "audit_log_action_check" CHECK (action IN ('setup_ok', 'setup_failed', 'login_ok', 'login_failed', 'login_locked', 'logout', 'event_create', 'critical_create', 'critical_read', 'agent_inbox_create', 'agent_inbox_update', 'agent_switch', 'agent_token_create', 'agent_token_revoke', 'agent_run', 'agent_stay_awake', 'news_publish', 'news_item_update', 'news_missing'));

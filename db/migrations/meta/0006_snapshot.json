@@ -1,0 +1,1136 @@
+{
+  "id": "fc43d5df-7a32-40d5-97e5-1a97ec9cab92",
+  "prevId": "8bf83c04-f1e2-44ac-90e6-6677041fd8a7",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "lifeui.agent_inbox": {
+      "name": "agent_inbox",
+      "schema": "lifeui",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "body": {
+          "name": "body",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'new'"
+        },
+        "reply": {
+          "name": "reply",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "run_id": {
+          "name": "run_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "agent_inbox_status_idx": {
+          "name": "agent_inbox_status_idx",
+          "columns": [
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "agent_inbox_run_id_agent_runs_id_fk": {
+          "name": "agent_inbox_run_id_agent_runs_id_fk",
+          "tableFrom": "agent_inbox",
+          "tableTo": "agent_runs",
+          "schemaTo": "lifeui",
+          "columnsFrom": [
+            "run_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "agent_inbox_status_check": {
+          "name": "agent_inbox_status_check",
+          "value": "status IN ('new', 'picked_up', 'done', 'needs_answer', 'cancelled')"
+        },
+        "agent_inbox_body_check": {
+          "name": "agent_inbox_body_check",
+          "value": "char_length(\"lifeui\".\"agent_inbox\".\"body\") BETWEEN 1 AND 2000"
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "lifeui.agent_messages": {
+      "name": "agent_messages",
+      "schema": "lifeui",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "kind": {
+          "name": "kind",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "slot": {
+          "name": "slot",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'manual'"
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "body": {
+          "name": "body",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "origin": {
+          "name": "origin",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'manual'"
+        },
+        "run_id": {
+          "name": "run_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "agent_messages_created_idx": {
+          "name": "agent_messages_created_idx",
+          "columns": [
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "agent_messages_run_id_agent_runs_id_fk": {
+          "name": "agent_messages_run_id_agent_runs_id_fk",
+          "tableFrom": "agent_messages",
+          "tableTo": "agent_runs",
+          "schemaTo": "lifeui",
+          "columnsFrom": [
+            "run_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "agent_messages_kind_check": {
+          "name": "agent_messages_kind_check",
+          "value": "kind IN ('briefing', 'overview', 'question', 'proposal', 'note')"
+        },
+        "agent_messages_slot_check": {
+          "name": "agent_messages_slot_check",
+          "value": "slot IN ('morning', 'midday', 'evening', 'manual')"
+        },
+        "agent_messages_origin_check": {
+          "name": "agent_messages_origin_check",
+          "value": "origin IN ('manual', 'agent')"
+        },
+        "agent_messages_title_check": {
+          "name": "agent_messages_title_check",
+          "value": "char_length(\"lifeui\".\"agent_messages\".\"title\") BETWEEN 1 AND 200"
+        },
+        "agent_messages_body_check": {
+          "name": "agent_messages_body_check",
+          "value": "char_length(\"lifeui\".\"agent_messages\".\"body\") BETWEEN 1 AND 8000"
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "lifeui.agent_runs": {
+      "name": "agent_runs",
+      "schema": "lifeui",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "started_at": {
+          "name": "started_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "finished_at": {
+          "name": "finished_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "slot": {
+          "name": "slot",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'running'"
+        },
+        "summary": {
+          "name": "summary",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tool_calls": {
+          "name": "tool_calls",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "tokens": {
+          "name": "tokens",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        }
+      },
+      "indexes": {
+        "agent_runs_started_idx": {
+          "name": "agent_runs_started_idx",
+          "columns": [
+            {
+              "expression": "started_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "agent_runs_slot_check": {
+          "name": "agent_runs_slot_check",
+          "value": "slot IN ('morning', 'midday', 'evening', 'manual')"
+        },
+        "agent_runs_status_check": {
+          "name": "agent_runs_status_check",
+          "value": "status IN ('running', 'ok', 'failed', 'skipped')"
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "lifeui.agent_settings": {
+      "name": "agent_settings",
+      "schema": "lifeui",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "smallint",
+          "primaryKey": true,
+          "notNull": true,
+          "default": 1
+        },
+        "enabled": {
+          "name": "enabled",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "stay_awake_on": {
+          "name": "stay_awake_on",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "agent_settings_single_row_check": {
+          "name": "agent_settings_single_row_check",
+          "value": "\"lifeui\".\"agent_settings\".\"id\" = 1"
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "lifeui.agent_tokens": {
+      "name": "agent_tokens",
+      "schema": "lifeui",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "label": {
+          "name": "label",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "token_hash": {
+          "name": "token_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "last_used_at": {
+          "name": "last_used_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "revoked_at": {
+          "name": "revoked_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "agent_tokens_token_hash_unique": {
+          "name": "agent_tokens_token_hash_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "token_hash"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "agent_tokens_label_check": {
+          "name": "agent_tokens_label_check",
+          "value": "char_length(\"lifeui\".\"agent_tokens\".\"label\") BETWEEN 1 AND 60"
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "lifeui.audit_log": {
+      "name": "audit_log",
+      "schema": "lifeui",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "at": {
+          "name": "at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "action": {
+          "name": "action",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "target": {
+          "name": "target",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ip": {
+          "name": "ip",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "detail": {
+          "name": "detail",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::jsonb"
+        }
+      },
+      "indexes": {
+        "audit_log_at_idx": {
+          "name": "audit_log_at_idx",
+          "columns": [
+            {
+              "expression": "at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "audit_log_action_check": {
+          "name": "audit_log_action_check",
+          "value": "action IN ('setup_ok', 'setup_failed', 'login_ok', 'login_failed', 'login_locked', 'logout', 'event_create', 'critical_create', 'critical_read', 'agent_inbox_create', 'agent_inbox_update', 'agent_switch', 'agent_token_create', 'agent_token_revoke', 'agent_run', 'agent_stay_awake', 'news_publish', 'news_item_update')"
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "lifeui.auth_throttle": {
+      "name": "auth_throttle",
+      "schema": "lifeui",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "smallint",
+          "primaryKey": true,
+          "notNull": true,
+          "default": 1
+        },
+        "failed_count": {
+          "name": "failed_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "locked_until": {
+          "name": "locked_until",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_failed_at": {
+          "name": "last_failed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "auth_throttle_single_row_check": {
+          "name": "auth_throttle_single_row_check",
+          "value": "\"lifeui\".\"auth_throttle\".\"id\" = 1"
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "lifeui.entities": {
+      "name": "entities",
+      "schema": "lifeui",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "iri": {
+          "name": "iri",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "class_iri": {
+          "name": "class_iri",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sensitivity": {
+          "name": "sensitivity",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'Personal'"
+        },
+        "source_id": {
+          "name": "source_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "confidence": {
+          "name": "confidence",
+          "type": "numeric(3, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "props": {
+          "name": "props",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::jsonb"
+        },
+        "origin": {
+          "name": "origin",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'import'"
+        },
+        "recorded_at": {
+          "name": "recorded_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "entities_class_idx": {
+          "name": "entities_class_idx",
+          "columns": [
+            {
+              "expression": "class_iri",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "entities_source_id_sources_id_fk": {
+          "name": "entities_source_id_sources_id_fk",
+          "tableFrom": "entities",
+          "tableTo": "sources",
+          "schemaTo": "lifeui",
+          "columnsFrom": [
+            "source_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "entities_iri_unique": {
+          "name": "entities_iri_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "iri"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "entities_status_check": {
+          "name": "entities_status_check",
+          "value": "\"lifeui\".\"entities\".\"status\" IS NULL OR \"lifeui\".\"entities\".\"status\" IN ('Planned', 'InProgress', 'Completed', 'Cancelled', 'Blocked')"
+        },
+        "entities_sensitivity_check": {
+          "name": "entities_sensitivity_check",
+          "value": "sensitivity IN ('Public', 'Personal', 'Sensitive', 'Secret')"
+        },
+        "entities_confidence_check": {
+          "name": "entities_confidence_check",
+          "value": "\"lifeui\".\"entities\".\"confidence\" IS NULL OR (\"lifeui\".\"entities\".\"confidence\" >= 0 AND \"lifeui\".\"entities\".\"confidence\" <= 1)"
+        },
+        "entities_origin_check": {
+          "name": "entities_origin_check",
+          "value": "\"lifeui\".\"entities\".\"origin\" IN ('import', 'app')"
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "lifeui.entity_links": {
+      "name": "entity_links",
+      "schema": "lifeui",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "subject_iri": {
+          "name": "subject_iri",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "predicate": {
+          "name": "predicate",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "object_iri": {
+          "name": "object_iri",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "origin": {
+          "name": "origin",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'import'"
+        }
+      },
+      "indexes": {
+        "entity_links_object_idx": {
+          "name": "entity_links_object_idx",
+          "columns": [
+            {
+              "expression": "object_iri",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "entity_links_predicate_idx": {
+          "name": "entity_links_predicate_idx",
+          "columns": [
+            {
+              "expression": "predicate",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "entity_links_triple_unique": {
+          "name": "entity_links_triple_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "subject_iri",
+            "predicate",
+            "object_iri"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "entity_links_origin_check": {
+          "name": "entity_links_origin_check",
+          "value": "\"lifeui\".\"entity_links\".\"origin\" IN ('import', 'app')"
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "lifeui.events": {
+      "name": "events",
+      "schema": "lifeui",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "iri": {
+          "name": "iri",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "class_iri": {
+          "name": "class_iri",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "occurred_at": {
+          "name": "occurred_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "occurred_on": {
+          "name": "occurred_on",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "started_at": {
+          "name": "started_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ended_at": {
+          "name": "ended_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sensitivity": {
+          "name": "sensitivity",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'Personal'"
+        },
+        "source_id": {
+          "name": "source_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "confidence": {
+          "name": "confidence",
+          "type": "numeric(3, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "recorded_at": {
+          "name": "recorded_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "superseded_by": {
+          "name": "superseded_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "payload": {
+          "name": "payload",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::jsonb"
+        }
+      },
+      "indexes": {
+        "events_class_idx": {
+          "name": "events_class_idx",
+          "columns": [
+            {
+              "expression": "class_iri",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "events_occurred_at_idx": {
+          "name": "events_occurred_at_idx",
+          "columns": [
+            {
+              "expression": "occurred_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "events_source_id_sources_id_fk": {
+          "name": "events_source_id_sources_id_fk",
+          "tableFrom": "events",
+          "tableTo": "sources",
+          "schemaTo": "lifeui",
+          "columnsFrom": [
+            "source_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "events_superseded_by_events_id_fk": {
+          "name": "events_superseded_by_events_id_fk",
+          "tableFrom": "events",
+          "tableTo": "events",
+          "schemaTo": "lifeui",
+          "columnsFrom": [
+            "superseded_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "events_iri_unique": {
+          "name": "events_iri_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "iri"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "events_has_time_check": {
+          "name": "events_has_time_check",
+          "value": "\"lifeui\".\"events\".\"occurred_at\" IS NOT NULL OR \"lifeui\".\"events\".\"occurred_on\" IS NOT NULL OR \"lifeui\".\"events\".\"started_at\" IS NOT NULL"
+        },
+        "events_start_before_end_check": {
+          "name": "events_start_before_end_check",
+          "value": "\"lifeui\".\"events\".\"started_at\" IS NULL OR \"lifeui\".\"events\".\"ended_at\" IS NULL OR \"lifeui\".\"events\".\"started_at\" <= \"lifeui\".\"events\".\"ended_at\""
+        },
+        "events_status_check": {
+          "name": "events_status_check",
+          "value": "status IN ('Planned', 'InProgress', 'Completed', 'Cancelled', 'Blocked')"
+        },
+        "events_sensitivity_check": {
+          "name": "events_sensitivity_check",
+          "value": "sensitivity IN ('Public', 'Personal', 'Sensitive', 'Secret')"
+        },
+        "events_confidence_check": {
+          "name": "events_confidence_check",
+          "value": "\"lifeui\".\"events\".\"confidence\" IS NULL OR (\"lifeui\".\"events\".\"confidence\" >= 0 AND \"lifeui\".\"events\".\"confidence\" <= 1)"
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "lifeui.owner_credentials": {
+      "name": "owner_credentials",
+      "schema": "lifeui",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "smallint",
+          "primaryKey": true,
+          "notNull": true,
+          "default": 1
+        },
+        "password_hash": {
+          "name": "password_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "owner_credentials_single_row_check": {
+          "name": "owner_credentials_single_row_check",
+          "value": "\"lifeui\".\"owner_credentials\".\"id\" = 1"
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "lifeui.sessions": {
+      "name": "sessions",
+      "schema": "lifeui",
+      "columns": {
+        "token_hash": {
+          "name": "token_hash",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "last_used_at": {
+          "name": "last_used_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "sessions_expires_at_idx": {
+          "name": "sessions_expires_at_idx",
+          "columns": [
+            {
+              "expression": "expires_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    },
+    "lifeui.sources": {
+      "name": "sources",
+      "schema": "lifeui",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "iri": {
+          "name": "iri",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "label": {
+          "name": "label",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "kind": {
+          "name": "kind",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "sources_iri_unique": {
+          "name": "sources_iri_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "iri"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "sources_kind_check": {
+          "name": "sources_kind_check",
+          "value": "kind IN ('UserStated', 'Observed', 'Imported', 'Inferred')"
+        }
+      },
+      "isRLSEnabled": true
+    }
+  },
+  "enums": {},
+  "schemas": {
+    "lifeui": "lifeui"
+  },
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

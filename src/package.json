@@ -1,0 +1,10 @@
+{
+  "name": "lifeui-api",
+  "private": true,
+  "description": "The Rust crate at the repo root (src/ + api/*.rs = the Vercel functions). This package.json only lets Turborepo run Cargo; the crate itself is defined by ../Cargo.toml.",
+  "scripts": {
+    "check": "cargo +1.92.0 check --bins --manifest-path ../Cargo.toml",
+    "test": "cargo +1.92.0 test --lib --manifest-path ../Cargo.toml",
+    "build": "cargo +1.92.0 build --bins --release --manifest-path ../Cargo.toml"
+  }
+}

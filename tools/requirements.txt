@@ -1,0 +1,9 @@
+rdflib>=7.0
+pyshacl>=0.26
+cryptography
+websocket-client
+anthropic
+icalendar
+recurring-ical-events
+pyyaml
+tzdata; sys_platform == "win32"

@@ -1,0 +1,14 @@
+@prefix life: <https://lifeui.example/ontology#> .
+@prefix id:   <https://lifeui.example/id/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+# SAMPLE import slice (what tools/ontology-importer-brief.md asks an agent to write): one source per slice,
+# ids prefixed with the slice code ("docs-").
+
+id:src-docs-docs a life:Source ; rdfs:label "Documents folder" ; life:hasSourceKind life:Imported .
+
+id:docs-cv a life:Document ; life:name "CV 2026" ; life:storageRef "file:///home/alex/Documents/CV%202026.pdf"^^xsd:anyURI ;
+    life:hasSource id:src-docs-docs ; life:confidence 0.95 ; life:hasSensitivity life:Personal .
+id:docs-ml-notes a life:Document ; life:name "ML course notes" ; life:relatesTo id:course-ml ;
+    life:storageRef "file:///home/alex/Documents/ml-notes.md"^^xsd:anyURI ;
+    life:hasSource id:src-docs-docs ; life:confidence 0.9 ; life:hasSensitivity life:Personal .

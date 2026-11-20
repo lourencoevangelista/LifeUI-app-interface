@@ -1,0 +1,544 @@
+@prefix life:    <https://lifeui.example/ontology#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
+
+# =============================================================================
+# LifeUI Ontology (OWL 2 DL) - schema layer ("TBox") plus controlled vocabularies.
+# Instance data lives in ontology/data/*.ttl, constraints in lifeui.shapes.ttl.
+#
+# NOTE: lifeui.example is a placeholder (reserved .example TLD). Replace the
+# namespace once the project has a real domain.
+# =============================================================================
+
+<https://lifeui.example/ontology> a owl:Ontology ;
+    dcterms:title "LifeUI Ontology"@en ;
+    dcterms:description "Domain model for a personal life-management application: people, events, plans, health, finance, critical information and the provenance of every fact."@en ;
+    dcterms:created "2026-11-08"^^xsd:date ;
+    owl:versionInfo "0.3.0" .
+
+# -----------------------------------------------------------------------------
+# Annotation properties
+# -----------------------------------------------------------------------------
+
+life:dbTable a owl:AnnotationProperty ;
+    rdfs:label "database table"@en ;
+    rdfs:comment "Hint for the persistence layer (Drizzle schema): table that stores instances of the annotated class. Only set on classes that are persisted as first-class rows."@en .
+
+# =============================================================================
+# CLASSES
+# =============================================================================
+
+life:LifeEntity a owl:Class ;
+    rdfs:label "Life entity"@en ;
+    rdfs:comment "Root class of everything the application tracks about the owner's life."@en .
+
+# --- Agents ------------------------------------------------------------------
+
+life:Agent a owl:Class ;
+    rdfs:subClassOf life:LifeEntity ;
+    rdfs:label "Agent"@en ;
+    rdfs:comment "Something that can act or take part in events: a person or an organization."@en .
+
+life:Person a owl:Class ;
+    rdfs:subClassOf life:Agent ;
+    rdfs:label "Person"@en .
+
+life:Owner a owl:Class ;
+    rdfs:subClassOf life:Person ;
+    rdfs:label "Owner"@en ;
+    rdfs:comment "The person whose life the application manages. Intended to have exactly one instance per dataset."@en .
+
+life:Organization a owl:Class ;
+    rdfs:subClassOf life:Agent ;
+    rdfs:label "Organization"@en .
+
+# --- Places ------------------------------------------------------------------
+
+life:Place a owl:Class ;
+    rdfs:subClassOf life:LifeEntity ;
+    rdfs:label "Place"@en .
+
+life:Home a owl:Class ;
+    rdfs:subClassOf life:Place ;
+    rdfs:label "Home"@en .
+
+life:Workplace a owl:Class ;
+    rdfs:subClassOf life:Place ;
+    rdfs:label "Workplace"@en .
+
+# --- Events (point-in-time or short occurrences; persisted) ------------------
+
+life:Event a owl:Class ;
+    rdfs:subClassOf life:LifeEntity ;
+    rdfs:label "Event"@en ;
+    rdfs:comment "Something that happens at, or over a short span of, time. Core persisted record of the application."@en ;
+    life:dbTable "events" .
+
+life:Appointment a owl:Class ; rdfs:subClassOf life:Event ; rdfs:label "Appointment"@en .
+life:Meeting     a owl:Class ; rdfs:subClassOf life:Event ; rdfs:label "Meeting"@en .
+life:Milestone   a owl:Class ; rdfs:subClassOf life:Event ; rdfs:label "Milestone"@en ;
+    rdfs:comment "A notable life or project moment (kick-off, graduation, move, release)."@en .
+life:Award       a owl:Class ; rdfs:subClassOf life:Milestone ; rdfs:label "Award"@en ;
+    rdfs:comment "Academic or professional merit award, honour or prize. Recipient via life:participant, awarding organization via life:relatesTo."@en .
+life:Trip        a owl:Class ; rdfs:subClassOf life:Event ; rdfs:label "Trip"@en .
+life:Workout     a owl:Class ; rdfs:subClassOf life:Event ; rdfs:label "Workout"@en .
+life:Measurement a owl:Class ; rdfs:subClassOf life:Event ; rdfs:label "Measurement"@en ;
+    rdfs:comment "A recorded observation of a quantity (weight, blood pressure, sleep hours...)."@en .
+life:Transaction a owl:Class ; rdfs:subClassOf life:Event ; rdfs:label "Transaction"@en ;
+    rdfs:comment "A financial movement on an account."@en .
+
+# --- Periods (states that hold over a time span) -----------------------------
+
+life:Period a owl:Class ;
+    rdfs:subClassOf life:LifeEntity ;
+    rdfs:label "Period"@en ;
+    rdfs:comment "A time-bounded state or relationship held by a person."@en .
+
+life:Employment   a owl:Class ; rdfs:subClassOf life:Period ; rdfs:label "Employment"@en .
+life:Enrollment   a owl:Class ; rdfs:subClassOf life:Period ; rdfs:label "Enrollment"@en ;
+    rdfs:comment "Period of study at an organization."@en .
+life:Residency    a owl:Class ; rdfs:subClassOf life:Period ; rdfs:label "Residency"@en ;
+    rdfs:comment "Period of living at a place."@en .
+life:Relationship a owl:Class ; rdfs:subClassOf life:Period ; rdfs:label "Relationship"@en ;
+    rdfs:comment "Interpersonal relationship between the holder and another person."@en .
+life:Subscription a owl:Class ; rdfs:subClassOf life:Period ; rdfs:label "Subscription"@en .
+
+# --- Plans -------------------------------------------------------------------
+
+life:Goal    a owl:Class ; rdfs:subClassOf life:LifeEntity ; rdfs:label "Goal"@en .
+life:Project a owl:Class ; rdfs:subClassOf life:LifeEntity ; rdfs:label "Project"@en .
+life:Task    a owl:Class ; rdfs:subClassOf life:LifeEntity ; rdfs:label "Task"@en .
+life:Habit   a owl:Class ; rdfs:subClassOf life:LifeEntity ; rdfs:label "Habit"@en .
+
+# --- Assets and finance ------------------------------------------------------
+
+life:Asset a owl:Class ; rdfs:subClassOf life:LifeEntity ; rdfs:label "Asset"@en ;
+    rdfs:comment "A physical or digital thing owned by an agent."@en .
+life:Device  a owl:Class ; rdfs:subClassOf life:Asset ; rdfs:label "Device"@en .
+life:Vehicle a owl:Class ; rdfs:subClassOf life:Asset ; rdfs:label "Vehicle"@en .
+
+life:Account   a owl:Class ; rdfs:subClassOf life:LifeEntity ; rdfs:label "Account"@en ;
+    rdfs:comment "Financial account (bank, broker, wallet)."@en .
+life:Liability a owl:Class ; rdfs:subClassOf life:LifeEntity ; rdfs:label "Liability"@en .
+life:Budget    a owl:Class ; rdfs:subClassOf life:LifeEntity ; rdfs:label "Budget"@en .
+
+# --- Health ------------------------------------------------------------------
+
+life:HealthCondition a owl:Class ; rdfs:subClassOf life:LifeEntity ; rdfs:label "Health condition"@en .
+life:Allergy         a owl:Class ; rdfs:subClassOf life:HealthCondition ; rdfs:label "Allergy"@en .
+life:Medication      a owl:Class ; rdfs:subClassOf life:LifeEntity ; rdfs:label "Medication"@en .
+
+# --- Knowledge, tools, preferences ------------------------------------------
+
+life:Skill        a owl:Class ; rdfs:subClassOf life:LifeEntity ; rdfs:label "Skill"@en .
+life:SoftwareTool a owl:Class ; rdfs:subClassOf life:LifeEntity ; rdfs:label "Software tool"@en ;
+    rdfs:comment "Application, language toolchain or service (MATLAB, Rust, VS Code...)."@en .
+life:Preference   a owl:Class ; rdfs:subClassOf life:LifeEntity ; rdfs:label "Preference"@en ;
+    rdfs:comment "A stated or observed preference, as a key/value pair."@en .
+life:Document     a owl:Class ; rdfs:subClassOf life:LifeEntity ; rdfs:label "Document"@en .
+
+life:CriticalInformation a owl:Class ;
+    rdfs:subClassOf life:LifeEntity ;
+    rdfs:label "Critical information"@en ;
+    rdfs:comment "Information that must be reliably available (identity numbers, emergency contacts, insurance, access recovery). The ontology stores a description and a pointer to where it lives (storageRef) - never the secret itself. Stored in the knowledge base (entities), not in a table of its own."@en .
+
+# --- Provenance and controlled-vocabulary classes (not LifeEntities) ---------
+
+life:Source a owl:Class ;
+    rdfs:label "Source"@en ;
+    rdfs:comment "Where a fact came from (user statement, environment observation, import, inference)."@en .
+
+life:SourceKind a owl:Class ;
+    rdfs:label "Source kind"@en ;
+    owl:equivalentClass [ a owl:Class ; owl:oneOf ( life:UserStated life:Observed life:Imported life:Inferred ) ] .
+
+life:Status a owl:Class ;
+    rdfs:label "Status"@en ;
+    owl:equivalentClass [ a owl:Class ; owl:oneOf ( life:Planned life:InProgress life:Completed life:Cancelled life:Blocked ) ] .
+
+life:Sensitivity a owl:Class ;
+    rdfs:label "Sensitivity"@en ;
+    owl:equivalentClass [ a owl:Class ; owl:oneOf ( life:Public life:Personal life:Sensitive life:Secret ) ] .
+
+life:CriticalCategory a owl:Class ;
+    rdfs:label "Critical-information category"@en ;
+    owl:equivalentClass [ a owl:Class ; owl:oneOf ( life:Identity life:Medical life:Legal life:Financial life:Emergency life:Access ) ] .
+
+life:RelationType a owl:Class ;
+    rdfs:label "Relation type"@en ;
+    owl:equivalentClass [ a owl:Class ; owl:oneOf ( life:Family life:Partner life:Friend life:Colleague life:Mentor life:OtherRelation ) ] .
+
+# --- Disjointness ------------------------------------------------------------
+
+[] a owl:AllDisjointClasses ;
+    owl:members ( life:Agent life:Place life:Event life:Period life:Asset life:Account life:Document
+                  life:Component life:Application life:Course ) .
+
+[] a owl:AllDisjointClasses ;
+    owl:members ( life:Person life:Organization ) .
+
+[] a owl:AllDisjointClasses ;
+    owl:members ( life:Goal life:Project life:Task life:Habit ) .
+
+[] a owl:AllDisjointClasses ;
+    owl:members ( life:Source life:SourceKind life:Status life:Sensitivity life:CriticalCategory life:RelationType life:LifeEntity ) .
+
+# =============================================================================
+# CONTROLLED VOCABULARY INDIVIDUALS
+# =============================================================================
+
+life:UserStated a life:SourceKind ; rdfs:label "User stated"@en ;
+    rdfs:comment "The owner said it directly."@en .
+life:Observed a life:SourceKind ; rdfs:label "Observed"@en ;
+    rdfs:comment "Seen in the environment (file paths, installed software, tool output)."@en .
+life:Imported a life:SourceKind ; rdfs:label "Imported"@en ;
+    rdfs:comment "Loaded from an external system or file."@en .
+life:Inferred a life:SourceKind ; rdfs:label "Inferred"@en ;
+    rdfs:comment "Derived by reasoning; should carry a confidence below 1.0."@en .
+
+life:Planned    a life:Status ; rdfs:label "Planned"@en .
+life:InProgress a life:Status ; rdfs:label "In progress"@en .
+life:Completed  a life:Status ; rdfs:label "Completed"@en .
+life:Cancelled  a life:Status ; rdfs:label "Cancelled"@en .
+life:Blocked    a life:Status ; rdfs:label "Blocked"@en .
+
+life:Public    a life:Sensitivity ; rdfs:label "Public"@en    ; life:sensitivityRank 0 .
+life:Personal  a life:Sensitivity ; rdfs:label "Personal"@en  ; life:sensitivityRank 1 .
+life:Sensitive a life:Sensitivity ; rdfs:label "Sensitive"@en ; life:sensitivityRank 2 ;
+    rdfs:comment "Health, finance, identity: encrypt at rest, exclude from logs."@en .
+life:Secret    a life:Sensitivity ; rdfs:label "Secret"@en    ; life:sensitivityRank 3 ;
+    rdfs:comment "Credentials and recovery material: store only a reference, never the value."@en .
+
+life:Identity  a life:CriticalCategory ; rdfs:label "Identity"@en .
+life:Medical   a life:CriticalCategory ; rdfs:label "Medical"@en .
+life:Legal     a life:CriticalCategory ; rdfs:label "Legal"@en .
+life:Financial a life:CriticalCategory ; rdfs:label "Financial"@en .
+life:Emergency a life:CriticalCategory ; rdfs:label "Emergency"@en .
+life:Access    a life:CriticalCategory ; rdfs:label "Access"@en .
+
+life:Family        a life:RelationType ; rdfs:label "Family"@en .
+life:Partner       a life:RelationType ; rdfs:label "Partner"@en .
+life:Friend        a life:RelationType ; rdfs:label "Friend"@en .
+life:Colleague     a life:RelationType ; rdfs:label "Colleague"@en .
+life:Mentor        a life:RelationType ; rdfs:label "Mentor"@en .
+life:OtherRelation a life:RelationType ; rdfs:label "Other"@en .
+
+# =============================================================================
+# OBJECT PROPERTIES
+# =============================================================================
+
+life:participant a owl:ObjectProperty ;
+    rdfs:label "participant"@en ; rdfs:domain life:Event ; rdfs:range life:Agent .
+
+life:takesPlaceAt a owl:ObjectProperty ;
+    rdfs:label "takes place at"@en ; rdfs:domain life:Event ; rdfs:range life:Place .
+
+life:relatesTo a owl:ObjectProperty ;
+    rdfs:label "relates to"@en ; rdfs:domain life:LifeEntity ; rdfs:range life:LifeEntity .
+
+life:partOf a owl:ObjectProperty , owl:TransitiveProperty ;
+    rdfs:label "part of"@en ; rdfs:domain life:LifeEntity ; rdfs:range life:LifeEntity ;
+    owl:inverseOf life:hasPart .
+
+life:hasPart a owl:ObjectProperty , owl:TransitiveProperty ;
+    rdfs:label "has part"@en .
+
+life:supersededBy a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:label "superseded by"@en ; rdfs:domain life:LifeEntity ; rdfs:range life:LifeEntity ;
+    rdfs:comment "Newer record that replaces this one (facts are versioned, not overwritten)."@en .
+
+life:documentedBy a owl:ObjectProperty ;
+    rdfs:label "documented by"@en ; rdfs:domain life:LifeEntity ; rdfs:range life:Document .
+
+life:ownedBy a owl:ObjectProperty ;
+    rdfs:label "owned by"@en ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( life:Asset life:Account life:Liability life:Budget life:Document ) ] ;
+    rdfs:range life:Agent ;
+    owl:inverseOf life:owns .
+
+life:owns a owl:ObjectProperty ;
+    rdfs:label "owns"@en .
+
+life:holder a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:label "holder"@en ; rdfs:domain life:Period ; rdfs:range life:Person .
+
+life:withOrganization a owl:ObjectProperty ;
+    rdfs:label "with organization"@en ; rdfs:domain life:Period ; rdfs:range life:Organization .
+
+life:atPlace a owl:ObjectProperty ;
+    rdfs:label "at place"@en ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( life:Period life:Application ) ] ;
+    rdfs:range life:Place .
+
+life:withPerson a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:label "with person"@en ; rdfs:domain life:Relationship ; rdfs:range life:Person .
+
+life:relationType a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:label "relation type"@en ; rdfs:domain life:Relationship ; rdfs:range life:RelationType .
+
+life:hasStatus a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:label "has status"@en ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( life:Event life:Task life:Goal life:Project life:Application ) ] ;
+    rdfs:range life:Status .
+
+life:hasSource a owl:ObjectProperty ;
+    rdfs:label "has source"@en ; rdfs:domain life:LifeEntity ; rdfs:range life:Source .
+
+life:hasSourceKind a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:label "has source kind"@en ; rdfs:domain life:Source ; rdfs:range life:SourceKind .
+
+life:hasSensitivity a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:label "has sensitivity"@en ; rdfs:domain life:LifeEntity ; rdfs:range life:Sensitivity .
+
+life:hasCategory a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:label "has category"@en ; rdfs:domain life:CriticalInformation ; rdfs:range life:CriticalCategory .
+
+life:contributesTo a owl:ObjectProperty ;
+    rdfs:label "contributes to"@en ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( life:Task life:Project life:Habit ) ] ;
+    rdfs:range life:Goal ;
+    owl:inverseOf life:receivesContributionFrom .
+
+life:receivesContributionFrom a owl:ObjectProperty ;
+    rdfs:label "receives contribution from"@en .
+
+life:inAccount a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:label "in account"@en ; rdfs:domain life:Transaction ; rdfs:range life:Account .
+
+life:installedOn a owl:ObjectProperty ;
+    rdfs:label "installed on"@en ; rdfs:domain life:SoftwareTool ; rdfs:range life:Device .
+
+# Person-centred convenience links
+life:pursues a owl:ObjectProperty ;
+    rdfs:label "pursues"@en ; rdfs:domain life:Person ; rdfs:range life:Goal .
+life:practices a owl:ObjectProperty ;
+    rdfs:label "practices"@en ; rdfs:domain life:Person ; rdfs:range life:Habit .
+life:worksOn a owl:ObjectProperty ;
+    rdfs:label "works on"@en ; rdfs:domain life:Person ; rdfs:range life:Project .
+life:hasSkill a owl:ObjectProperty ;
+    rdfs:label "has skill"@en ; rdfs:domain life:Person ; rdfs:range life:Skill .
+life:hasCondition a owl:ObjectProperty ;
+    rdfs:label "has condition"@en ; rdfs:domain life:Person ; rdfs:range life:HealthCondition .
+life:takes a owl:ObjectProperty ;
+    rdfs:label "takes"@en ; rdfs:domain life:Person ; rdfs:range life:Medication .
+life:prefers a owl:ObjectProperty ;
+    rdfs:label "prefers"@en ; rdfs:domain life:Person ; rdfs:range life:Preference .
+life:uses a owl:ObjectProperty ;
+    rdfs:label "uses"@en ; rdfs:domain life:Person ;
+    rdfs:range [ a owl:Class ; owl:unionOf ( life:Device life:SoftwareTool ) ] .
+
+# =============================================================================
+# DATATYPE PROPERTIES
+# =============================================================================
+
+# --- Common ------------------------------------------------------------------
+life:name a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "name"@en ; rdfs:domain life:LifeEntity ; rdfs:range xsd:string .
+life:description a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "description"@en ; rdfs:domain life:LifeEntity ; rdfs:range xsd:string .
+life:confidence a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "confidence"@en ; rdfs:domain life:LifeEntity ; rdfs:range xsd:decimal ;
+    rdfs:comment "Belief that the fact is correct, 0.0 to 1.0."@en .
+life:recordedAt a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "recorded at"@en ; rdfs:domain life:LifeEntity ; rdfs:range xsd:dateTime ;
+    rdfs:comment "When the application learned this fact (not when it happened)."@en .
+life:sensitivityRank a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "sensitivity rank"@en ; rdfs:domain life:Sensitivity ; rdfs:range xsd:integer .
+
+# --- Agents ------------------------------------------------------------------
+life:givenName a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "given name"@en ; rdfs:domain life:Person ; rdfs:range xsd:string .
+life:familyName a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "family name"@en ; rdfs:domain life:Person ; rdfs:range xsd:string .
+life:preferredName a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "preferred name"@en ; rdfs:domain life:Person ; rdfs:range xsd:string .
+life:birthDate a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "birth date"@en ; rdfs:domain life:Person ; rdfs:range xsd:date .
+life:email a owl:DatatypeProperty ;
+    rdfs:label "email"@en ; rdfs:domain life:Agent ; rdfs:range xsd:string .
+life:phone a owl:DatatypeProperty ;
+    rdfs:label "phone"@en ; rdfs:domain life:Agent ; rdfs:range xsd:string .
+life:website a owl:DatatypeProperty ;
+    rdfs:label "website"@en ; rdfs:domain life:Organization ; rdfs:range xsd:anyURI .
+
+# --- Time --------------------------------------------------------------------
+life:occurredAt a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "occurred at"@en ; rdfs:domain life:Event ; rdfs:range xsd:dateTime .
+life:occurredOn a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "occurred on"@en ; rdfs:domain life:Event ; rdfs:range xsd:date ;
+    rdfs:comment "Use when only the day is known."@en .
+life:startedAt a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "started at"@en ; rdfs:domain life:Event ; rdfs:range xsd:dateTime .
+life:endedAt a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "ended at"@en ; rdfs:domain life:Event ; rdfs:range xsd:dateTime .
+life:startDate a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "start date"@en ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( life:Period life:Project life:Habit life:Medication life:HealthCondition ) ] ;
+    rdfs:range xsd:date .
+life:endDate a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "end date"@en ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( life:Period life:Project life:Habit life:Medication life:HealthCondition ) ] ;
+    rdfs:range xsd:date .
+
+# --- Plans -------------------------------------------------------------------
+life:dueDate a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "due date"@en ; rdfs:domain life:Task ; rdfs:range xsd:date .
+life:targetDate a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "target date"@en ; rdfs:domain life:Goal ; rdfs:range xsd:date .
+life:priority a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "priority"@en ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( life:Task life:Project ) ] ;
+    rdfs:range xsd:integer ;
+    rdfs:comment "1 (highest) to 5 (lowest)."@en .
+
+# --- Finance and measurements ------------------------------------------------
+life:amount a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "amount"@en ; rdfs:domain life:Transaction ; rdfs:range xsd:decimal ;
+    rdfs:comment "Signed: negative for money out."@en .
+life:currency a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "currency"@en ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( life:Transaction life:Account life:Liability life:Budget ) ] ;
+    rdfs:range xsd:string ;
+    rdfs:comment "ISO 4217 code, e.g. EUR."@en .
+life:balance a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "balance"@en ; rdfs:domain life:Account ; rdfs:range xsd:decimal .
+life:metric a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "metric"@en ; rdfs:domain life:Measurement ; rdfs:range xsd:string .
+life:value a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "value"@en ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( life:Measurement life:Specification ) ] ;
+    rdfs:range xsd:decimal .
+life:unit a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "unit"@en ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( life:Measurement life:Specification ) ] ;
+    rdfs:range xsd:string ;
+    rdfs:comment "UCUM code, e.g. kg, mm[Hg], /min. Use \"1\" for dimensionless quantities."@en .
+
+# --- Knowledge, tools, preferences ------------------------------------------
+life:skillLevel a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "skill level"@en ; rdfs:domain life:Skill ; rdfs:range xsd:integer ;
+    rdfs:comment "1 (novice) to 5 (expert)."@en .
+life:version a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "version"@en ; rdfs:domain life:SoftwareTool ; rdfs:range xsd:string .
+life:operatingSystem a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "operating system"@en ; rdfs:domain life:Device ; rdfs:range xsd:string .
+life:preferenceKey a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "preference key"@en ; rdfs:domain life:Preference ; rdfs:range xsd:string .
+life:preferenceValue a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "preference value"@en ; rdfs:domain life:Preference ; rdfs:range xsd:string .
+
+# --- Critical information and documents -------------------------------------
+life:storageRef a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "storage reference"@en ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( life:CriticalInformation life:Document ) ] ;
+    rdfs:range xsd:anyURI ;
+    rdfs:comment "Pointer to where the real content lives (vault item, file path, URL). Never the secret value itself."@en .
+life:reviewBy a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "review by"@en ; rdfs:domain life:CriticalInformation ; rdfs:range xsd:date ;
+    rdfs:comment "Date by which this information should be re-verified."@en .
+
+# =============================================================================
+# v0.2.0 EXTENSIONS - derived from the owner's profile (studies, teams, work,
+# vehicles, applications). Everything below follows the same conventions.
+# =============================================================================
+
+# --- Organization subtypes ---------------------------------------------------
+
+life:University a owl:Class ; rdfs:subClassOf life:Organization ; rdfs:label "University"@en .
+life:StudentTeam a owl:Class ; rdfs:subClassOf life:Organization ; rdfs:label "Student team"@en ;
+    rdfs:comment "Student-run team or group inside a university (racing teams, project groups)."@en .
+life:Company a owl:Class ; rdfs:subClassOf life:Organization ; rdfs:label "Company"@en .
+life:EventOrganization a owl:Class ; rdfs:subClassOf life:Organization ; rdfs:label "Event organization"@en ;
+    rdfs:comment "Organizing body of an event series such as a forum or conference."@en .
+
+# --- Periods, applications ---------------------------------------------------
+
+life:Membership a owl:Class ; rdfs:subClassOf life:Period ; rdfs:label "Membership"@en ;
+    rdfs:comment "Membership of, or role in, an organization or team."@en .
+
+life:Application a owl:Class ; rdfs:subClassOf life:LifeEntity ; rdfs:label "Application"@en ;
+    rdfs:comment "An application to a job, internship, programme or university. Status tracks the process."@en .
+
+# --- Projects, components, specifications, lessons ---------------------------
+
+life:EngineeringProject a owl:Class ; rdfs:subClassOf life:Project ; rdfs:label "Engineering project"@en .
+life:SoftwareProject a owl:Class ; rdfs:subClassOf life:Project ; rdfs:label "Software project"@en .
+
+life:Component a owl:Class ; rdfs:subClassOf life:LifeEntity ; rdfs:label "Component"@en ;
+    rdfs:comment "Physical part of a vehicle or machine (motor, battery cells, chassis, tyres)."@en .
+
+life:Specification a owl:Class ; rdfs:subClassOf life:LifeEntity ; rdfs:label "Specification"@en ;
+    rdfs:comment "A named numeric parameter of a vehicle, component or project (mass, wheelbase, gear ratio, weight of a scoring term)."@en .
+
+life:Lesson a owl:Class ; rdfs:subClassOf life:LifeEntity ; rdfs:label "Lesson"@en ;
+    rdfs:comment "A lesson learned from a project, kept so it can be reused."@en .
+
+# --- Study, languages, interests ---------------------------------------------
+
+life:Course a owl:Class ; rdfs:subClassOf life:LifeEntity ; rdfs:label "Course"@en ;
+    rdfs:comment "A course, textbook-based study topic or subject area."@en .
+life:Language a owl:Class ; rdfs:subClassOf life:LifeEntity ; rdfs:label "Language"@en ;
+    rdfs:comment "A human language the person uses."@en .
+life:Interest a owl:Class ; rdfs:subClassOf life:LifeEntity ; rdfs:label "Interest"@en .
+
+# --- New object properties ---------------------------------------------------
+
+life:hasComponent a owl:ObjectProperty ;
+    rdfs:subPropertyOf life:hasPart ;
+    rdfs:label "has component"@en ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( life:Vehicle life:Device life:Component ) ] ;
+    rdfs:range life:Component .
+
+life:hasSpecification a owl:ObjectProperty ;
+    rdfs:label "has specification"@en ; rdfs:domain life:LifeEntity ; rdfs:range life:Specification .
+
+life:usesTool a owl:ObjectProperty ;
+    rdfs:label "uses tool"@en ; rdfs:domain life:Project ; rdfs:range life:SoftwareTool .
+
+life:appliesTo a owl:ObjectProperty ;
+    rdfs:label "applies to"@en ; rdfs:domain life:Application ; rdfs:range life:Organization .
+
+life:applicant a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:label "applicant"@en ; rdfs:domain life:Application ; rdfs:range life:Person .
+
+life:locatedAt a owl:ObjectProperty ;
+    rdfs:label "located at"@en ; rdfs:domain life:Organization ; rdfs:range life:Place .
+
+life:speaks a owl:ObjectProperty ;
+    rdfs:label "speaks"@en ; rdfs:domain life:Person ; rdfs:range life:Language .
+
+life:interestedIn a owl:ObjectProperty ;
+    rdfs:label "interested in"@en ; rdfs:domain life:Person ; rdfs:range life:Interest .
+
+life:takesCourse a owl:ObjectProperty ;
+    rdfs:label "takes course"@en ; rdfs:domain life:Person ; rdfs:range life:Course .
+
+life:learnedFrom a owl:ObjectProperty ;
+    rdfs:label "learned from"@en ; rdfs:domain life:Lesson ; rdfs:range life:Project .
+
+# --- New datatype properties -------------------------------------------------
+
+life:role a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "role"@en ; rdfs:domain life:Period ; rdfs:range xsd:string ;
+    rdfs:comment "Title or role held during the period (e.g. Head of a department)."@en .
+
+life:programName a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "programme name"@en ; rdfs:domain life:Application ; rdfs:range xsd:string .
+
+life:timezone a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "timezone"@en ; rdfs:domain life:Person ; rdfs:range xsd:string ;
+    rdfs:comment "IANA timezone name, e.g. Europe/Paris."@en .
+
+life:githubHandle a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "GitHub handle"@en ; rdfs:domain life:Agent ; rdfs:range xsd:string .
+
+life:profileUrl a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "profile URL"@en ; rdfs:domain life:Agent ; rdfs:range xsd:anyURI ;
+    rdfs:comment "Public profile page of the agent (e.g. GitHub profile)."@en .
+
+life:repositoryUrl a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "repository URL"@en ; rdfs:domain life:Project ; rdfs:range xsd:anyURI .

@@ -1,0 +1,75 @@
+@prefix life: <https://lifeui.example/ontology#> .
+@prefix id:   <https://lifeui.example/id/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+# =============================================================================
+# SAMPLE knowledge base about a fictional person, Alex Example. Copy this folder to <repo>/data-private/
+# (git-ignored) and replace it with what is true about you. Every entity needs life:name, life:hasSource,
+# life:confidence (0-1) and life:hasSensitivity (Public, Personal, Sensitive, Secret).
+# Check it:  python -I tools/validate_ontology.py      Load it:  python -I tools/import_knowledge.py plan / apply --yes
+# =============================================================================
+
+# --- Sources -----------------------------------------------------------------
+id:src-user a life:Source ; rdfs:label "Told to the app by the owner" ; life:hasSourceKind life:UserStated .
+
+# --- The owner -----------------------------------------------------------------
+id:owner a life:Person ; life:name "Alex Example" ; life:timezone "Europe/Paris" ;
+    life:interestedIn id:interest-agents , id:interest-cycling , id:interest-sideproject ;
+    life:worksOn id:proj-garden-app ; life:takesCourse id:course-ml ;
+    life:hasSource id:src-user ; life:confidence 1.0 ; life:hasSensitivity life:Personal .
+
+# --- Organizations ---------------------------------------------------------------
+id:org-uni a life:University ; life:name "Example University" ;
+    life:hasSource id:src-user ; life:confidence 1.0 ; life:hasSensitivity life:Public .
+id:org-cafe a life:Organization ; life:name "Café Élan" ; life:description "The café where the reading group meets." ;
+    life:hasSource id:src-user ; life:confidence 0.9 ; life:hasSensitivity life:Public .
+
+# --- Studies -------------------------------------------------------------------
+id:course-ml a life:Course ; life:name "Machine Learning 101" ; life:description "Evening course at Example University." ;
+    life:hasSource id:src-user ; life:confidence 1.0 ; life:hasSensitivity life:Personal .
+
+# --- Interests (Home > "To look into" shows the ones that match web/src/config.rs FOCUS_KEYWORDS) ------------
+id:interest-agents a life:Interest ; life:name "AI agents" ; life:description "Tool calling and MCP for my side project." ;
+    life:hasSource id:src-user ; life:confidence 1.0 ; life:hasSensitivity life:Personal .
+id:interest-cycling a life:Interest ; life:name "Cycling" ; life:description "Weekend rides." ;
+    life:hasSource id:src-user ; life:confidence 1.0 ; life:hasSensitivity life:Personal .
+id:interest-sideproject a life:Interest ; life:name "Garden app (side project)" ; life:description "A small app that reminds me to water the plants." ;
+    life:hasSource id:src-user ; life:confidence 1.0 ; life:hasSensitivity life:Personal .
+
+# --- Projects and tools --------------------------------------------------------------
+id:proj-garden-app a life:SoftwareProject ; life:name "Garden app" ; life:description "Side project: watering reminders." ;
+    life:usesTool id:tool-rust ; life:hasStatus life:InProgress ;
+    life:hasSource id:src-user ; life:confidence 1.0 ; life:hasSensitivity life:Personal .
+id:tool-rust a life:SoftwareTool ; life:name "Rust" ;
+    life:hasSource id:src-user ; life:confidence 1.0 ; life:hasSensitivity life:Public .
+id:skill-rust a life:Skill ; life:name "Rust programming" ;
+    life:hasSource id:src-user ; life:confidence 0.8 ; life:hasSensitivity life:Personal .
+id:spec-bike-weight a life:Specification ; life:name "Bike weight" ; life:value 9.4 ; life:unit "kg" ;
+    life:hasSource id:src-user ; life:confidence 1.0 ; life:hasSensitivity life:Personal .
+id:lesson-backups a life:Lesson ; life:name "Test restores, not just backups" ; life:learnedFrom id:proj-garden-app ;
+    life:hasSource id:src-user ; life:confidence 1.0 ; life:hasSensitivity life:Personal .
+
+# --- Tasks (Home > To-do) ---------------------------------------------------------------
+id:task-1 a life:Task ; life:name "Renew the bike insurance" ; life:hasStatus life:Planned ; life:dueDate "2027-01-15"^^xsd:date ;
+    life:hasSource id:src-user ; life:confidence 1.0 ; life:hasSensitivity life:Personal .
+id:task-2 a life:Task ; life:name "Finish the ML course project" ; life:hasStatus life:InProgress ; life:dueDate "2026-12-20"^^xsd:date ;
+    life:hasSource id:src-user ; life:confidence 1.0 ; life:hasSensitivity life:Personal .
+id:task-3 a life:Task ; life:name "Side project: add push notifications" ; life:hasStatus life:Planned ;
+    life:hasSource id:src-user ; life:confidence 1.0 ; life:hasSensitivity life:Personal .
+id:task-4 a life:Task ; life:name "Book the dentist" ; life:hasStatus life:Planned ;
+    life:hasSource id:src-user ; life:confidence 1.0 ; life:hasSensitivity life:Personal .
+id:task-5 a life:Task ; life:name "Read the MCP specification" ; life:hasStatus life:Planned ;
+    life:hasSource id:src-user ; life:confidence 1.0 ; life:hasSensitivity life:Personal .
+id:task-6 a life:Task ; life:name "Clean the bike chain" ; life:hasStatus life:Planned ;
+    life:hasSource id:src-user ; life:confidence 1.0 ; life:hasSensitivity life:Personal .
+id:task-7 a life:Task ; life:name "Back up the photos" ; life:hasStatus life:Completed ;
+    life:hasSource id:src-user ; life:confidence 1.0 ; life:hasSensitivity life:Personal .
+
+# --- Events (Timeline) ----------------------------------------------------------------
+id:event-course-start a life:Milestone ; life:name "Started the ML course" ; life:occurredOn "2026-09-15"^^xsd:date ;
+    life:hasStatus life:Completed ; life:hasSource id:src-user ; life:confidence 1.0 ; life:hasSensitivity life:Personal .
+
+# --- Critical information: a POINTER to where it is kept, never the value itself ---------------
+id:ci-passport a life:CriticalInformation ; life:name "Passport" ; life:hasCategory life:Identity ;
+    life:hasSensitivity life:Secret ; life:storageRef "vault://documents/passport"^^xsd:anyURI ;
+    life:hasSource id:src-user ; life:confidence 1.0 .

@@ -1,0 +1,11 @@
+[Unit]
+Description=LifeUI daily news briefing (08:30)
+
+[Timer]
+# The server's local time. Persistent: runs at the next boot if the server was off at 08:30.
+OnCalendar=*-*-* 08:30:00
+Persistent=true
+Unit=lifeui-news.service
+
+[Install]
+WantedBy=timers.target

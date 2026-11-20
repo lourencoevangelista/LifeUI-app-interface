@@ -1,0 +1,87 @@
+# Root package = the Vercel Rust functions (every file in api/ is a function and
+# must be declared as its own [[bin]]). The Leptos frontend lives in web/ and is
+# built separately with Trunk (target wasm32-unknown-unknown).
+
+[package]
+name = "lifeui-api"
+version = "0.1.0"
+edition = "2024"
+# Vercel's Rust runtime currently builds with rustc 1.92: keep every dependency compatible with it.
+rust-version = "1.92"
+publish = false
+
+[workspace]
+members = ["web"]
+
+[dependencies]
+argon2 = "0.6.0"
+base64 = "0.23.1"
+bytes = "1.12.1"
+getrandom = "0.4.3"
+http = "1.5.0"
+http-body-util = "0.1.5"
+oxrdf = "0.3"
+rudof_rdf = "0.3.38"
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.154"
+sha2 = "0.11.1"
+shacl = "0.3.38"
+sparql_service = "0.3.38"
+sqlx = { version = "0.8", default-features = false, features = ["runtime-tokio", "tls-rustls", "postgres"] }
+subtle = "2.6.1"
+time = { version = "0.3.55", features = ["parsing"] }
+tokio = { version = "1.54.1", features = ["full"] }
+vercel_runtime = "2"
+
+[[bin]]
+name = "health"
+path = "api/health.rs"
+
+[[bin]]
+name = "db_ping"
+path = "api/db_ping.rs"
+
+[[bin]]
+name = "auth_status"
+path = "api/auth_status.rs"
+
+[[bin]]
+name = "auth_setup"
+path = "api/auth_setup.rs"
+
+[[bin]]
+name = "auth_login"
+path = "api/auth_login.rs"
+
+[[bin]]
+name = "auth_logout"
+path = "api/auth_logout.rs"
+
+[[bin]]
+name = "events"
+path = "api/events.rs"
+
+[profile.release]
+codegen-units = 1
+lto = "fat"
+opt-level = 3
+
+[[bin]]
+name = "news"
+path = "api/news.rs"
+
+[[bin]]
+name = "entities"
+path = "api/entities.rs"
+
+[[bin]]
+name = "audit"
+path = "api/audit.rs"
+
+[[bin]]
+name = "agent"
+path = "api/agent.rs"
+
+[[bin]]
+name = "runner"
+path = "api/runner.rs"

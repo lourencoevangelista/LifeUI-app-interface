@@ -1,0 +1,28 @@
+# IMPORTANT: when this file exists the Vercel CLI ignores .gitignore, so every
+# private path must be listed here too. Personal data must never be uploaded.
+/data-private/
+*Personal Ontology Source*.md
+.env
+.env.*
+*.dump
+*.sql.age
+
+# Local Claude Code files and the document store (the store lives outside the repo; listed as a safeguard)
+.claude/
+Docs/
+
+# Tooling and build caches
+.venv/
+node_modules/
+.turbo/
+.git/
+tools/
+.github/
+# NOTE: ontology/ is deliberately NOT ignored: src/shapes.rs compiles ontology/lifeui.ttl and
+# ontology/lifeui.shapes.ttl into the functions (include_str!). Personal data lives in data-private/ (ignored above).
+
+# Rust: only release binaries are useful for prebuilt deploys (see Vercel Rust docs)
+target/**
+!target/release
+!target/x86_64-unknown-linux-gnu/release/**
+!target/aarch64-unknown-linux-gnu/release/**

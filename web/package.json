@@ -1,0 +1,9 @@
+{
+  "name": "lifeui-web",
+  "private": true,
+  "description": "Leptos (Rust/WASM) frontend. This package.json only lets Turborepo run the Cargo and Trunk commands.",
+  "scripts": {
+    "check": "cargo +1.92.0 check -p web --target wasm32-unknown-unknown",
+    "build": "trunk build --release"
+  }
+}

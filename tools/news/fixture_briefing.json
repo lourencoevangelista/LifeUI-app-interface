@@ -1,0 +1,421 @@
+{
+  "date": "2026-11-19",
+  "type": "daily",
+  "intro": "3 things that matter today\n- Gemini 4 Neon: Google DeepMind's new model is much faster and may rival the top models.\n- AgentAbstain: a benchmark for whether LLM agents know when not to act.\n- agentkit sandbox: a PR adds production-readiness checks before the next release.",
+  "weather": {
+    "date": "2026-11-19",
+    "tmin": 12.8,
+    "tmax": 18.4,
+    "precip_prob": 0.0,
+    "wind": {
+      "class": "Moderate",
+      "dir": "W"
+    },
+    "weather_type_pt": "Céu pouco nublado",
+    "hourly": [
+      {
+        "time": "09:00",
+        "temp": 15.9,
+        "precip_prob": 0.0,
+        "wind_kmh": 14.8,
+        "wind_dir": "W",
+        "weather_type": "Partly cloudy"
+      },
+      {
+        "time": "10:00",
+        "temp": 17.1,
+        "precip_prob": null,
+        "wind_kmh": 16.6,
+        "wind_dir": "NW",
+        "weather_type": "Partly cloudy"
+      },
+      {
+        "time": "11:00",
+        "temp": 17.8,
+        "precip_prob": null,
+        "wind_kmh": 17.3,
+        "wind_dir": "NW",
+        "weather_type": "Partly cloudy"
+      },
+      {
+        "time": "12:00",
+        "temp": 18.4,
+        "precip_prob": 0.0,
+        "wind_kmh": 17.6,
+        "wind_dir": "NW",
+        "weather_type": "Partly cloudy"
+      },
+      {
+        "time": "13:00",
+        "temp": 18.0,
+        "precip_prob": null,
+        "wind_kmh": 17.3,
+        "wind_dir": "W",
+        "weather_type": "Partly cloudy"
+      },
+      {
+        "time": "14:00",
+        "temp": 17.9,
+        "precip_prob": null,
+        "wind_kmh": 17.6,
+        "wind_dir": "NW",
+        "weather_type": "Partly cloudy"
+      },
+      {
+        "time": "15:00",
+        "temp": 17.4,
+        "precip_prob": 0.0,
+        "wind_kmh": 16.6,
+        "wind_dir": "W",
+        "weather_type": "Partly cloudy"
+      },
+      {
+        "time": "16:00",
+        "temp": 16.9,
+        "precip_prob": null,
+        "wind_kmh": 15.8,
+        "wind_dir": "W",
+        "weather_type": "Partly cloudy"
+      },
+      {
+        "time": "17:00",
+        "temp": 15.6,
+        "precip_prob": null,
+        "wind_kmh": 9.4,
+        "wind_dir": "W",
+        "weather_type": "Partly cloudy"
+      },
+      {
+        "time": "18:00",
+        "temp": 14.5,
+        "precip_prob": 0.0,
+        "wind_kmh": 7.9,
+        "wind_dir": "W",
+        "weather_type": "High clouds"
+      },
+      {
+        "time": "19:00",
+        "temp": 14.2,
+        "precip_prob": null,
+        "wind_kmh": 7.2,
+        "wind_dir": "W",
+        "weather_type": "High clouds"
+      },
+      {
+        "time": "20:00",
+        "temp": 13.5,
+        "precip_prob": null,
+        "wind_kmh": 7.2,
+        "wind_dir": "W",
+        "weather_type": "Partly cloudy"
+      },
+      {
+        "time": "21:00",
+        "temp": 13.5,
+        "precip_prob": 0.0,
+        "wind_kmh": 6.8,
+        "wind_dir": "W",
+        "weather_type": "Partly cloudy"
+      }
+    ],
+    "warnings": [
+      {
+        "level": "yellow",
+        "type": "Coastal swell",
+        "text": "Waves from the northwest, 4 to 5 metres.",
+        "start": "2026-11-19T19:15+00:00",
+        "end": "2026-11-20T09:00+00:00",
+        "today": true
+      },
+      {
+        "level": "yellow",
+        "type": "Rain",
+        "text": "Persistent, sometimes heavy rain.",
+        "start": "2026-11-21T12:00+00:00",
+        "end": "2026-11-21T18:00+00:00",
+        "today": false
+      }
+    ],
+    "source": "IPMA",
+    "ipma_updated": "2026-11-19T20:31+00:00",
+    "fetched_at": "2026-11-19T21:16:04+00:00",
+    "stale": false,
+    "summary": "13–18 °C, partly cloudy, no rain, moderate wind from W. Yellow warning: coastal swell."
+  },
+  "items": [
+    {
+      "url": "https://deepmind.google/blog/introducing-gemini-4-neon/",
+      "title": "Introducing Gemini 4 Neon",
+      "source": "Google DeepMind",
+      "published_at": "2026-11-18T21:35:43+00:00",
+      "tags": [
+        "ai_breakthrough"
+      ],
+      "importance": 10,
+      "focus_relevance": 5,
+      "summary": "Google DeepMind introduces Gemini 4 Neon, a new model that has gained significant attention and discussion in the AI community.",
+      "why_it_matters": "Gemini 4 Neon represents a major breakthrough in large language models, which could influence the direction and capabilities of AI systems Example Org works with.",
+      "topics": [
+        "agent_models"
+      ],
+      "points": 1000,
+      "id": "fd9bebbff7e692862dad"
+    },
+    {
+      "url": "https://micjm.com/blog/gemini-4-neon-looks-like-a-top-model/",
+      "title": "Gemini 4 Neon looks like an Opus 5.5 competitor",
+      "source": "Hacker News",
+      "published_at": "2026-11-19T00:29:45+00:00",
+      "tags": [
+        "release",
+        "industry",
+        "focus_relevant"
+      ],
+      "importance": 9,
+      "focus_relevance": 6,
+      "summary": "Gemini 4 Neon is a faster version of Gemini 4 with significant speed improvements, potentially rivaling Opus 5.5 in performance.",
+      "why_it_matters": "the reader's agent sandboxes and performance-critical tools may need to adapt to new model capabilities and speed benchmarks.",
+      "topics": [
+        "agent_models"
+      ],
+      "points": 249,
+      "id": "8d685e65acd098254c40"
+    },
+    {
+      "url": "https://huggingface.co/papers/2611.23388",
+      "title": "QDA: Closed-Loop LLM Quantization Design with Agents",
+      "source": "HF daily papers",
+      "published_at": "2026-11-19T00:00:00+00:00",
+      "tags": [
+        "research",
+        "focus_relevant"
+      ],
+      "importance": 8,
+      "focus_relevance": 9,
+      "summary": "QDA is a system that uses an LLM agent to design quantization recipes for models, improving efficiency and reducing manual effort. It addresses the challenge of evaluating quantized models by automating the process.",
+      "why_it_matters": "This research directly impacts the reader's work on agent systems and model optimization, offering a new way to automate and improve model serving through agent-driven quantization.",
+      "topics": [
+        "agent_models",
+        "evals_observability"
+      ],
+      "points": null,
+      "id": "c310b5e368969ddf7758"
+    },
+    {
+      "url": "https://www.anthropic.com/research/claude-black-hole-physics",
+      "title": "Claude solves two open problems in the physics of black holes",
+      "source": "Hacker News",
+      "published_at": "2026-11-19T17:30:44+00:00",
+      "tags": [
+        "ai_breakthrough",
+        "industry"
+      ],
+      "importance": 10,
+      "focus_relevance": 2,
+      "summary": "Claude Fable 5.2 has solved two open problems in theoretical physics related to black holes and quantum gravity.",
+      "why_it_matters": "This is a major breakthrough in AI's ability to contribute to scientific research, though not directly relevant to the reader's current product focus.",
+      "topics": [
+        "agent_models"
+      ],
+      "points": 269,
+      "id": "3277cf52dcd23547d830"
+    },
+    {
+      "url": "https://huggingface.co/papers/2611.24738",
+      "title": "Jeveration: System One Models Now Generate",
+      "source": "HF daily papers",
+      "published_at": "2026-11-19T00:00:00+00:00",
+      "tags": [
+        "research",
+        "focus_relevant"
+      ],
+      "importance": 6,
+      "focus_relevance": 7,
+      "summary": "Jeveration is a method that enables high-quality image generation using a frozen vision-language model, maintaining global consistency through shared random states for parallel predictions.",
+      "why_it_matters": "This research could influence the reader's work on generative models and agent-based systems, particularly in creating consistent and high-quality outputs.",
+      "topics": [],
+      "points": null,
+      "id": "5df7924d971b90331e59"
+    },
+    {
+      "url": "https://arxiv.org/abs/2607.10059",
+      "title": "AgentAbstain: Do LLM Agents Know When Not to Act?",
+      "source": "arXiv cs.AI",
+      "published_at": "2026-11-19T05:00:00+00:00",
+      "tags": [
+        "ai_breakthrough",
+        "research",
+        "focus_relevant"
+      ],
+      "importance": 8,
+      "focus_relevance": 9,
+      "summary": "AgentAbstain introduces a framework to evaluate whether LLM agents can recognize when to abstain from acting. This addresses a critical gap in autonomous agent systems.",
+      "why_it_matters": "the reader's work on agent systems and governance directly relates to this research, as it highlights the need for safer and more reliable agent behavior.",
+      "topics": [
+        "agent_models",
+        "evals_observability",
+        "ontology",
+        "sandbox"
+      ],
+      "points": null,
+      "id": "1d31337ec2a4c925b9b0"
+    },
+    {
+      "url": "https://blog.google/innovation-and-ai/technology/developers-tools/gemini-api-tool-retrieval/",
+      "title": "Introducing Tool Retrieval in the Gemini API",
+      "source": "Google AI",
+      "published_at": "2026-11-19T18:00:00+00:00",
+      "tags": [
+        "ai_breakthrough",
+        "focus_relevant"
+      ],
+      "importance": 8,
+      "focus_relevance": 7,
+      "summary": "Google AI introduced Tool Retrieval in the Gemini API, allowing agents to access hundreds of tools with fewer tokens. This feature is now in preview.",
+      "why_it_matters": "This could improve efficiency in agent systems by reducing token usage, which is relevant to the reader's work on tool calling and agent sandboxes.",
+      "topics": [
+        "agent_models",
+        "graph_rag"
+      ],
+      "points": null,
+      "id": "056cf0b58a3dbace6833"
+    },
+    {
+      "url": "https://github.com/example-org/agentkit-sandbox/pull/139",
+      "title": "agentkit-sandbox PR #139: test: gap verification for the 5 production-readiness items (M3 load, M5 idle, M4 autopromote, M5 chaos, M3+M5 escape)",
+      "source": "Example Org (issues/PRs)",
+      "published_at": "2026-11-19T13:22:42+00:00",
+      "tags": [
+        "focus_relevant"
+      ],
+      "importance": 3,
+      "focus_relevance": 8,
+      "summary": "This PR consolidates five gap-verification tracks into the main branch for Example Org's sandbox, ensuring production-readiness checks are measured on Apple Silicon hardware. The branch includes a critical fix for the wasmtime-50 fuel-test issue.",
+      "why_it_matters": "This PR is crucial for Example Org's progress in making their sandbox production-ready, especially with the required fix for the wasmtime-50 fuel-test.",
+      "topics": [
+        "frontier",
+        "sandbox"
+      ],
+      "points": null,
+      "id": "451cad185bcf92dfcc9c"
+    },
+    {
+      "url": "https://github.com/example-org/agentkit-sandbox/pull/140",
+      "title": "agentkit-sandbox PR #140: feat(server): make session and snapshot caps env-configurable",
+      "source": "Example Org (issues/PRs)",
+      "published_at": "2026-11-19T19:17:41+00:00",
+      "tags": [
+        "focus_relevant"
+      ],
+      "importance": 3,
+      "focus_relevance": 8,
+      "summary": "This PR makes session and snapshot limits in the Example Org sandbox configurable via environment variables, improving flexibility for clustered deployments.",
+      "why_it_matters": "This change enhances the scalability and flexibility of Example Org's sandbox, which is critical for enterprise deployment and performance.",
+      "topics": [
+        "sandbox"
+      ],
+      "points": null,
+      "id": "46207885d983cc002184"
+    },
+    {
+      "url": "https://openai.com/index/how-openai-performance-factory-keeps-chatgpt-fast",
+      "title": "How OpenAI’s Performance Factory keeps ChatGPT fast",
+      "source": "OpenAI",
+      "published_at": "2026-11-19T08:00:00+00:00",
+      "tags": [
+        "research",
+        "focus_relevant"
+      ],
+      "importance": 5,
+      "focus_relevance": 5,
+      "summary": "OpenAI's Performance Factory system uses Codex-powered workflows to maintain ChatGPT's speed by identifying and fixing performance issues.",
+      "why_it_matters": "This highlights the importance of performance optimization in large-scale AI systems, relevant to the reader's work on observability and governance.",
+      "topics": [
+        "agent_harness"
+      ],
+      "points": null,
+      "id": "9342dbf934e428aa00c1"
+    },
+    {
+      "url": "https://github.com/superradcompany/microsandbox/releases/tag/v0.8.0",
+      "title": "microsandbox v0.8.0",
+      "source": "Agent sandboxes",
+      "published_at": "2026-11-19T16:32:31+00:00",
+      "tags": [
+        "release",
+        "focus_relevant"
+      ],
+      "importance": 4,
+      "focus_relevance": 6,
+      "summary": "microsandbox v0.8.0 was released, offering a local-first microVM runtime and library for sandboxed environments.",
+      "why_it_matters": "This release could be useful for the reader's work on agent sandboxes and secure execution environments.",
+      "topics": [
+        "frontier",
+        "sandbox"
+      ],
+      "points": null,
+      "id": "e714021dfb40ebbe090c"
+    },
+    {
+      "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.328",
+      "title": "claude-code v2.1.328",
+      "source": "Claude Code",
+      "published_at": "2026-11-19T01:14:04+00:00",
+      "tags": [
+        "release"
+      ],
+      "importance": 4,
+      "focus_relevance": 3,
+      "summary": "Claude Code v2.1.328 introduces auto mode for several platforms, new hook behaviors, and configuration options for tool resumption and data handling.",
+      "why_it_matters": "While not directly relevant to Example Org, this release shows ongoing improvements in the broader AI agent ecosystem, which the reader may need to stay competitive with.",
+      "topics": [
+        "agent_harness",
+        "agent_models",
+        "evals_observability",
+        "mcp"
+      ],
+      "points": null,
+      "id": "1590e3f6387642d1f8fc"
+    }
+  ],
+  "server_status": {
+    "updates_applied": [],
+    "other_upgradable": 17,
+    "rebooted": false,
+    "disk_usage_pct": {
+      "/": 7,
+      "/srv/data": 12
+    },
+    "smart": {
+      "/dev/sda": "PASSED",
+      "/dev/nvme0": "PASSED"
+    },
+    "last_backup": {
+      "finished_at": "2026-11-19T20:17:05+00:00",
+      "age_hours": 1.0
+    },
+    "syncthing": {
+      "connected": [
+        "laptop"
+      ],
+      "folders": {
+        "Notes": "up to date"
+      }
+    },
+    "gpu_temp_c": 67,
+    "ollama_update": null,
+    "failed_steps": [],
+    "alerts": [],
+    "notes": []
+  },
+  "generated_by_model": "ollama qwen3:8b",
+  "generated_at": "2026-11-19T21:16:05+00:00",
+  "stats": {
+    "fetched": 3672,
+    "new": 721,
+    "candidates": 20,
+    "chosen": 12,
+    "model_batch_failures": 0,
+    "window_from": "2026-11-18T21:16+00:00"
+  }
+}

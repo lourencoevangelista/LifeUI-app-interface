@@ -1,0 +1,339 @@
+@prefix life:    <https://lifeui.example/ontology#> .
+@prefix shapes:  <https://lifeui.example/shapes#> .
+@prefix sh:      <http://www.w3.org/ns/shacl#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+# =============================================================================
+# LifeUI SHACL shapes - constraints that OWL (open-world) cannot express.
+# Validate data together with lifeui.ttl (pyshacl: ont_graph=...) so that
+# subclass targeting and vocabulary individuals (life:Completed ...) resolve.
+#
+# Severity policy: Violation = data is wrong/unusable; Warning = data is
+# incomplete (e.g. missing provenance) but may still be stored.
+# =============================================================================
+
+<https://lifeui.example/shapes> a owl:Ontology ;
+    dcterms:title "LifeUI SHACL shapes"@en ;
+    owl:versionInfo "0.1.0" ;
+    sh:declare [ sh:prefix "life" ; sh:namespace "https://lifeui.example/ontology#"^^xsd:anyURI ] .
+
+# -----------------------------------------------------------------------------
+# Every LifeEntity: name, provenance, confidence, sensitivity
+# -----------------------------------------------------------------------------
+
+shapes:LifeEntityShape a sh:NodeShape ;
+    sh:targetClass life:LifeEntity ;
+    sh:property [
+        sh:path life:name ;
+        sh:datatype xsd:string ; sh:minCount 1 ; sh:maxCount 1 ; sh:minLength 1 ;
+        sh:message "Every entity needs exactly one non-empty life:name."
+    ] ;
+    sh:property [
+        sh:path life:description ;
+        sh:datatype xsd:string ; sh:maxCount 1
+    ] ;
+    sh:property [
+        sh:path life:confidence ;
+        sh:or ( [ sh:datatype xsd:decimal ] [ sh:datatype xsd:double ] [ sh:datatype xsd:integer ] ) ;
+        sh:minInclusive 0 ; sh:maxInclusive 1 ; sh:maxCount 1 ;
+        sh:message "life:confidence must be a number between 0 and 1."
+    ] ;
+    sh:property [
+        sh:path life:recordedAt ;
+        sh:datatype xsd:dateTime ; sh:maxCount 1
+    ] ;
+    # A WRONG value is a violation; only a MISSING one is a warning (a single combined rule marked
+    # "Warning" would let nonsense such as life:hasSensitivity life:Top through).
+    sh:property [
+        sh:path life:hasSource ; sh:class life:Source ;
+        sh:message "life:hasSource must point to a life:Source."
+    ] ;
+    sh:property [
+        sh:path life:hasSource ; sh:minCount 1 ; sh:severity sh:Warning ;
+        sh:message "Every fact should say where it came from (life:hasSource)."
+    ] ;
+    sh:property [
+        sh:path life:hasSensitivity ; sh:class life:Sensitivity ; sh:maxCount 1 ;
+        sh:message "life:hasSensitivity must be one of Public, Personal, Sensitive, Secret (and only one)."
+    ] ;
+    sh:property [
+        sh:path life:hasSensitivity ; sh:minCount 1 ; sh:severity sh:Warning ;
+        sh:message "Every entity should declare a life:hasSensitivity level."
+    ] .
+
+shapes:SourceShape a sh:NodeShape ;
+    sh:targetClass life:Source ;
+    sh:property [
+        sh:path rdfs:label ; sh:nodeKind sh:Literal ; sh:minCount 1 ;
+        sh:message "A Source needs an rdfs:label."
+    ] ;
+    sh:property [
+        sh:path life:hasSourceKind ;
+        sh:class life:SourceKind ; sh:minCount 1 ; sh:maxCount 1
+    ] .
+
+# -----------------------------------------------------------------------------
+# Agents
+# -----------------------------------------------------------------------------
+
+shapes:AgentShape a sh:NodeShape ;
+    sh:targetClass life:Agent ;
+    sh:property [
+        sh:path life:githubHandle ; sh:datatype xsd:string ; sh:pattern "^[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?$" ;
+        sh:message "life:githubHandle is not a valid GitHub username."
+    ] ;
+    sh:property [ sh:path life:profileUrl ; sh:datatype xsd:anyURI ; sh:maxCount 1 ] .
+
+shapes:PersonShape a sh:NodeShape ;
+    sh:targetClass life:Person ;
+    sh:property [ sh:path life:birthDate ; sh:datatype xsd:date ; sh:maxCount 1 ] ;
+    sh:property [
+        sh:path life:timezone ; sh:datatype xsd:string ; sh:pattern "^[A-Za-z_]+(/[A-Za-z_+-]+)+$" ;
+        sh:message "life:timezone must be an IANA name such as Europe/Paris."
+    ] ;
+    sh:property [
+        sh:path life:email ; sh:datatype xsd:string ;
+        sh:pattern "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$" ;
+        sh:message "life:email does not look like an e-mail address."
+    ] .
+
+shapes:OwnerShape a sh:NodeShape ;
+    sh:targetClass life:Owner ;
+    sh:or (
+        [ sh:path life:preferredName ; sh:minCount 1 ]
+        [ sh:path life:givenName ; sh:minCount 1 ]
+    ) ;
+    sh:message "The owner needs a life:preferredName or life:givenName." .
+
+# -----------------------------------------------------------------------------
+# Events
+# -----------------------------------------------------------------------------
+
+shapes:EventShape a sh:NodeShape ;
+    sh:targetClass life:Event ;
+    sh:or (
+        [ sh:path life:occurredAt ; sh:minCount 1 ]
+        [ sh:path life:occurredOn ; sh:minCount 1 ]
+        [ sh:path life:startedAt  ; sh:minCount 1 ]
+    ) ;
+    sh:message "An Event needs life:occurredAt, life:occurredOn or life:startedAt." ;
+    sh:property [
+        sh:path life:hasStatus ;
+        sh:class life:Status ; sh:minCount 1 ; sh:maxCount 1
+    ] ;
+    sh:property [
+        sh:path life:startedAt ;
+        sh:lessThanOrEquals life:endedAt ;
+        sh:message "life:startedAt must not be after life:endedAt."
+    ] ;
+    sh:property [ sh:path life:participant ; sh:class life:Agent ] ;
+    sh:property [ sh:path life:takesPlaceAt ; sh:class life:Place ] .
+
+shapes:TransactionShape a sh:NodeShape ;
+    sh:targetClass life:Transaction ;
+    sh:property [
+        sh:path life:amount ;
+        sh:or ( [ sh:datatype xsd:decimal ] [ sh:datatype xsd:integer ] ) ;
+        sh:minCount 1 ; sh:maxCount 1
+    ] ;
+    sh:property [
+        sh:path life:currency ;
+        sh:datatype xsd:string ; sh:pattern "^[A-Z]{3}$" ; sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "life:currency must be an ISO 4217 code such as EUR."
+    ] ;
+    sh:property [ sh:path life:inAccount ; sh:class life:Account ; sh:maxCount 1 ] ;
+    sh:property [
+        sh:path life:inAccount ; sh:minCount 1 ; sh:severity sh:Warning ;
+        sh:message "No account linked yet (accounts are not stored in the database yet)."
+    ] .
+
+shapes:MeasurementShape a sh:NodeShape ;
+    sh:targetClass life:Measurement ;
+    sh:property [ sh:path life:metric ; sh:datatype xsd:string ; sh:minCount 1 ; sh:maxCount 1 ] ;
+    sh:property [
+        sh:path life:value ;
+        sh:or ( [ sh:datatype xsd:decimal ] [ sh:datatype xsd:integer ] [ sh:datatype xsd:double ] ) ;
+        sh:minCount 1 ; sh:maxCount 1
+    ] ;
+    sh:property [ sh:path life:unit ; sh:datatype xsd:string ; sh:minCount 1 ; sh:maxCount 1 ] .
+
+# -----------------------------------------------------------------------------
+# Periods
+# -----------------------------------------------------------------------------
+
+shapes:PeriodShape a sh:NodeShape ;
+    sh:targetClass life:Period ;
+    sh:property [ sh:path life:holder ; sh:class life:Person ; sh:minCount 1 ; sh:maxCount 1 ] ;
+    sh:property [
+        sh:path life:startDate ;
+        sh:datatype xsd:date ; sh:maxCount 1 ;
+        sh:lessThanOrEquals life:endDate ;
+        sh:message "life:startDate must not be after life:endDate."
+    ] ;
+    sh:property [
+        sh:path life:startDate ; sh:minCount 1 ; sh:severity sh:Info ;
+        sh:message "Start date unknown (optional; the owner said dates are not needed for now)."
+    ] ;
+    sh:property [ sh:path life:endDate ; sh:datatype xsd:date ; sh:maxCount 1 ] ;
+    sh:property [ sh:path life:role ; sh:datatype xsd:string ; sh:maxCount 1 ] .
+
+shapes:MembershipShape a sh:NodeShape ;
+    sh:targetClass life:Membership ;
+    sh:property [ sh:path life:withOrganization ; sh:class life:Organization ; sh:minCount 1 ] .
+
+shapes:ApplicationShape a sh:NodeShape ;
+    sh:targetClass life:Application ;
+    sh:property [ sh:path life:hasStatus ; sh:class life:Status ; sh:minCount 1 ; sh:maxCount 1 ] ;
+    sh:property [ sh:path life:applicant ; sh:class life:Person ; sh:minCount 1 ; sh:maxCount 1 ] ;
+    sh:property [
+        sh:path life:appliesTo ; sh:class life:Organization ; sh:minCount 1 ;
+        sh:message "An Application must say which organization it is addressed to (life:appliesTo)."
+    ] ;
+    sh:property [ sh:path life:atPlace ; sh:class life:Place ] ;
+    sh:property [ sh:path life:programName ; sh:datatype xsd:string ; sh:maxCount 1 ] .
+
+shapes:SpecificationShape a sh:NodeShape ;
+    sh:targetClass life:Specification ;
+    sh:property [
+        sh:path life:value ;
+        sh:or ( [ sh:datatype xsd:decimal ] [ sh:datatype xsd:integer ] [ sh:datatype xsd:double ] ) ;
+        sh:minCount 1 ; sh:maxCount 1
+    ] ;
+    sh:property [
+        sh:path life:unit ; sh:datatype xsd:string ; sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "A Specification needs a unit (use \"1\" for dimensionless values)."
+    ] .
+
+shapes:LessonShape a sh:NodeShape ;
+    sh:targetClass life:Lesson ;
+    sh:property [ sh:path life:learnedFrom ; sh:class life:Project ; sh:minCount 1 ; sh:severity sh:Warning ] .
+
+shapes:EmploymentShape a sh:NodeShape ;
+    sh:targetClass life:Employment ;
+    sh:property [ sh:path life:withOrganization ; sh:class life:Organization ; sh:minCount 1 ] .
+
+shapes:EnrollmentShape a sh:NodeShape ;
+    sh:targetClass life:Enrollment ;
+    sh:property [ sh:path life:withOrganization ; sh:class life:Organization ; sh:minCount 1 ] .
+
+shapes:ResidencyShape a sh:NodeShape ;
+    sh:targetClass life:Residency ;
+    sh:property [ sh:path life:atPlace ; sh:class life:Place ; sh:minCount 1 ] .
+
+shapes:RelationshipShape a sh:NodeShape ;
+    sh:targetClass life:Relationship ;
+    sh:property [ sh:path life:withPerson ; sh:class life:Person ; sh:minCount 1 ; sh:maxCount 1 ] ;
+    sh:property [ sh:path life:relationType ; sh:class life:RelationType ; sh:minCount 1 ; sh:maxCount 1 ] .
+
+# -----------------------------------------------------------------------------
+# Plans
+# -----------------------------------------------------------------------------
+
+shapes:TaskShape a sh:NodeShape ;
+    sh:targetClass life:Task ;
+    sh:property [ sh:path life:hasStatus ; sh:class life:Status ; sh:minCount 1 ; sh:maxCount 1 ] ;
+    sh:property [ sh:path life:dueDate ; sh:datatype xsd:date ; sh:maxCount 1 ] ;
+    sh:property [
+        sh:path life:priority ;
+        sh:datatype xsd:integer ; sh:minInclusive 1 ; sh:maxInclusive 5 ; sh:maxCount 1 ;
+        sh:message "life:priority must be an integer from 1 to 5."
+    ] .
+
+shapes:GoalShape a sh:NodeShape ;
+    sh:targetClass life:Goal ;
+    sh:property [ sh:path life:hasStatus ; sh:class life:Status ; sh:maxCount 1 ] ;
+    sh:property [
+        sh:path life:hasStatus ; sh:minCount 1 ; sh:severity sh:Info ;
+        sh:message "Goal status unknown (optional)."
+    ] ;
+    sh:property [ sh:path life:targetDate ; sh:datatype xsd:date ; sh:maxCount 1 ] .
+
+shapes:ProjectShape a sh:NodeShape ;
+    sh:targetClass life:Project ;
+    sh:property [ sh:path life:hasStatus ; sh:class life:Status ; sh:maxCount 1 ] ;
+    sh:property [
+        sh:path life:hasStatus ; sh:minCount 1 ; sh:severity sh:Info ;
+        sh:message "Project status unknown (optional)."
+    ] ;
+    sh:property [
+        sh:path life:priority ;
+        sh:datatype xsd:integer ; sh:minInclusive 1 ; sh:maxInclusive 5 ; sh:maxCount 1
+    ] ;
+    sh:property [ sh:path life:usesTool ; sh:class life:SoftwareTool ] ;
+    sh:property [ sh:path life:repositoryUrl ; sh:datatype xsd:anyURI ; sh:maxCount 1 ] .
+
+# -----------------------------------------------------------------------------
+# Assets, finance, knowledge, preferences
+# -----------------------------------------------------------------------------
+
+shapes:OwnedThingShape a sh:NodeShape ;
+    sh:targetClass life:Asset , life:Account , life:Liability , life:Budget ;
+    sh:property [
+        sh:path life:ownedBy ; sh:class life:Agent ; sh:minCount 1 ;
+        sh:message "Assets, accounts, liabilities and budgets need an owner (life:ownedBy)."
+    ] .
+
+shapes:AccountShape a sh:NodeShape ;
+    sh:targetClass life:Account ;
+    sh:property [
+        sh:path life:currency ;
+        sh:datatype xsd:string ; sh:pattern "^[A-Z]{3}$" ; sh:minCount 1 ; sh:maxCount 1
+    ] ;
+    sh:property [
+        sh:path life:balance ;
+        sh:or ( [ sh:datatype xsd:decimal ] [ sh:datatype xsd:integer ] ) ; sh:maxCount 1
+    ] .
+
+shapes:SkillShape a sh:NodeShape ;
+    sh:targetClass life:Skill ;
+    sh:property [
+        sh:path life:skillLevel ;
+        sh:datatype xsd:integer ; sh:minInclusive 1 ; sh:maxInclusive 5 ; sh:maxCount 1
+    ] .
+
+shapes:PreferenceShape a sh:NodeShape ;
+    sh:targetClass life:Preference ;
+    sh:property [ sh:path life:preferenceKey ; sh:datatype xsd:string ; sh:minCount 1 ; sh:maxCount 1 ] ;
+    sh:property [ sh:path life:preferenceValue ; sh:datatype xsd:string ; sh:minCount 1 ; sh:maxCount 1 ] .
+
+shapes:SoftwareToolShape a sh:NodeShape ;
+    sh:targetClass life:SoftwareTool ;
+    sh:property [ sh:path life:installedOn ; sh:class life:Device ] .
+
+# -----------------------------------------------------------------------------
+# Critical information: classified, never holds the secret itself
+# -----------------------------------------------------------------------------
+
+shapes:CriticalInformationShape a sh:NodeShape ;
+    sh:targetClass life:CriticalInformation ;
+    sh:property [
+        sh:path life:hasCategory ;
+        sh:class life:CriticalCategory ; sh:minCount 1 ; sh:maxCount 1
+    ] ;
+    sh:property [
+        sh:path life:hasSensitivity ;
+        sh:minCount 1 ;
+        sh:message "Critical information must declare its sensitivity."
+    ] ;
+    sh:property [
+        sh:path life:hasSensitivity ;
+        sh:in ( life:Sensitive life:Secret ) ; sh:severity sh:Warning ;
+        sh:message "Critical information is normally life:Sensitive or life:Secret."
+    ] ;
+    sh:property [ sh:path life:storageRef ; sh:datatype xsd:anyURI ; sh:maxCount 1 ] ;
+    sh:property [ sh:path life:reviewBy ; sh:datatype xsd:date ; sh:maxCount 1 ] ;
+    sh:sparql [
+        a sh:SPARQLConstraint ;
+        sh:message "Secret critical information must point to where it is kept via life:storageRef." ;
+        sh:prefixes <https://lifeui.example/shapes> ;
+        sh:select """
+            SELECT $this WHERE {
+                $this life:hasSensitivity life:Secret .
+                FILTER NOT EXISTS { $this life:storageRef ?ref }
+            }
+        """
+    ] .

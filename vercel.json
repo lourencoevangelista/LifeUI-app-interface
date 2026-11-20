@@ -1,0 +1,37 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "installCommand": "echo 'no npm install: production is built by scripts/vercel-build.sh, Turborepo is for local development and CI'",
+  "buildCommand": "bash scripts/vercel-build.sh",
+  "outputDirectory": "web/dist",
+  "headers": [
+    {
+      "source": "/sw.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        },
+        {
+          "key": "Service-Worker-Allowed",
+          "value": "/"
+        }
+      ]
+    },
+    {
+      "source": "/manifest.webmanifest",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/manifest+json"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/runner/news",
+      "destination": "/api/runner?route=news"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+[Unit]
+Description=LifeUI agent: morning briefing (09:00, after the news run)
+
+[Timer]
+OnCalendar=*-*-* 09:00:00
+# Times are the server's local time (timedatectl set-timezone ...). Catch up after the server was off; runs are serialized by the service.
+Persistent=true
+Unit=lifeui-agent@cloud-morning.service
+
+[Install]
+WantedBy=timers.target

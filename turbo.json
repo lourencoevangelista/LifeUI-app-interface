@@ -1,0 +1,48 @@
+{
+  "$schema": "https://turborepo.com/schema.json",
+  "ui": "stream",
+  "envMode": "loose",
+  "tasks": {
+    "check": {
+      "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/Cargo.toml", "$TURBO_ROOT$/Cargo.lock"]
+    },
+    "lifeui-api#check": {
+      "inputs": ["$TURBO_ROOT$/src/**", "!$TURBO_ROOT$/src/.turbo/**", "$TURBO_ROOT$/api/**", "$TURBO_ROOT$/Cargo.toml", "$TURBO_ROOT$/Cargo.lock", "$TURBO_ROOT$/ontology/**", "$TURBO_ROOT$/db/certs/**"]
+    },
+    "lifeui-web#check": {
+      "inputs": ["src/**", "Cargo.toml", "index.html", "$TURBO_ROOT$/Cargo.lock"]
+    },
+    "lifeui-db#check": {
+      "inputs": ["src/**", "migrations/**", "tsconfig.json", "drizzle.config.ts", "package.json"]
+    },
+    "lifeui-tools#check": {
+      "inputs": ["$TURBO_ROOT$/ontology/**", "$TURBO_ROOT$/tools/**", "!$TURBO_ROOT$/tools/__pycache__/**", "$TURBO_ROOT$/data-private/**", "!$TURBO_ROOT$/data-private/shots/**", "$TURBO_ROOT$/scripts/py.mjs", "$TURBO_ROOT$/scripts/contrast.mjs", "$TURBO_ROOT$/web/style.css"]
+    },
+
+    "test": {
+      "inputs": ["$TURBO_DEFAULT$"]
+    },
+    "lifeui-api#test": {
+      "inputs": ["$TURBO_ROOT$/src/**", "!$TURBO_ROOT$/src/.turbo/**", "$TURBO_ROOT$/api/**", "$TURBO_ROOT$/Cargo.toml", "$TURBO_ROOT$/Cargo.lock", "$TURBO_ROOT$/ontology/**", "$TURBO_ROOT$/db/src/schema.ts", "$TURBO_ROOT$/db/certs/**"]
+    },
+    "lifeui-tools#test": {
+      "inputs": ["$TURBO_ROOT$/tools/**", "!$TURBO_ROOT$/tools/__pycache__/**", "$TURBO_ROOT$/ontology/**", "$TURBO_ROOT$/db/migrations/**", "$TURBO_ROOT$/data-private/**", "!$TURBO_ROOT$/data-private/shots/**", "$TURBO_ROOT$/scripts/py.mjs"]
+    },
+
+    "build": {
+      "outputs": []
+    },
+    "lifeui-web#build": {
+      "inputs": ["src/**", "Cargo.toml", "index.html", "style.css", "public/**", "$TURBO_ROOT$/Cargo.lock"],
+      "outputs": ["dist/**"]
+    },
+    "lifeui-api#build": {
+      "cache": false
+    },
+
+    "e2e": {
+      "cache": false,
+      "dependsOn": ["lifeui-web#build"]
+    }
+  }
+}
